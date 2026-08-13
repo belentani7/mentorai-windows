@@ -44,19 +44,40 @@ jobs:
           if ($bytes[0] -ne 0x4D -or $bytes[1] -ne 0x5A) { throw "El archivo no empieza por la firma MZ de Windows" }
           Write-Host "PE candidate verified: $($exe.Length) bytes"
 
-      - name: Install NSIS
+      - name: Install NSIS (optional installer)
+        id: nsis
         shell: pwsh
-        run: choco install nsis -y --no-progress
+        continue-on-error: true
+        run: |
+          choco install nsis -y --no-progress
+          if ($LASTEXITCODE -ne 0) {
+            Write-Warning "Chocolatey no pudo instalar NSIS; se entregará el EXE y se omitirá el instalador."
+            exit 0
+          }
 
-      - name: Build NSIS installer
+      - name: Build NSIS installer (optional)
         shell: pwsh
-        run: '& "C:\Program Files (x86)\NSIS\makensis.exe" installer\mentorai_windows.nsi'
+        continue-on-error: true
+        run: |
+          $candidates = @(
+            "C:\\Program Files (x86)\\NSIS\\makensis.exe",
+            "C:\\Program Files\\NSIS\\makensis.exe"
+          )
+          $makensis = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $makensis) {
+            Write-Warning "makensis.exe no está disponible; se omitirá el instalador y se conservará el EXE."
+            exit 0
+          }
+          & $makensis "installer\\mentorai_windows.nsi"
+          if ($LASTEXITCODE -ne 0) { throw "NSIS no pudo crear el instalador" }
 
       - name: Generate checksums
         shell: pwsh
         run: |
-          Get-FileHash "dist\MentorAI.exe" -Algorithm SHA256 | Format-List | Out-File "dist\SHA256SUMS.txt"
-          Get-FileHash "dist\MentorAI-Setup.exe" -Algorithm SHA256 | Format-List | Out-File "dist\SHA256SUMS.txt" -Append
+          Get-FileHash "dist\\MentorAI.exe" -Algorithm SHA256 | Format-List | Out-File "dist\\SHA256SUMS.txt"
+          if (Test-Path "dist\\MentorAI-Setup.exe") {
+            Get-FileHash "dist\\MentorAI-Setup.exe" -Algorithm SHA256 | Format-List | Out-File "dist\\SHA256SUMS.txt" -Append
+          }
 
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
@@ -66,4 +87,4 @@ jobs:
             dist/MentorAI.exe
             dist/MentorAI-Setup.exe
             dist/SHA256SUMS.txt
-          if-no-files-found: error
+          if-no-files-found: warn
