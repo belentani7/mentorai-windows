@@ -1,0 +1,82 @@
+{
+    "docker": {
+        "explanation": "Docker es una plataforma de containerización que permite empaquetar aplicaciones con todas sus dependencias en contenedores aislados, asegurando que funcionen igual en cualquier máquina.",
+        "steps": [
+            "Instala Docker desde https://www.docker.com/products/docker-desktop",
+            "Verifica la instalación: docker --version",
+            "Descarga una imagen: docker pull ubuntu",
+            "Ejecuta un contenedor: docker run -it ubuntu bash",
+            "Explora el contenedor como si fuera una máquina virtual"
+        ],
+        "security_tips": [
+            "Usa imágenes oficiales de Docker Hub",
+            "Escanea imágenes para vulnerabilidades: docker scan nombre-imagen",
+            "No ejecutes contenedores como root",
+            "Mantén Docker actualizado a la última versión"
+        ]
+    },
+    "dockerfile": {
+        "explanation": "Un Dockerfile es un archivo de texto que contiene instrucciones para construir una imagen Docker personalizada.",
+        "steps": [
+            "Crea un archivo llamado Dockerfile",
+            "Define la imagen base: FROM python:3.9",
+            "Copia archivos: COPY . /app",
+            "Instala dependencias: RUN pip install -r requirements.txt",
+            "Define el comando de inicio: CMD ['python', 'app.py']"
+        ],
+        "security_tips": [
+            "Usa versiones específicas de imágenes base",
+            "Minimiza el tamaño de la imagen",
+            "No incluyas secretos en el Dockerfile",
+            "Usa multi-stage builds para reducir vulnerabilidades"
+        ]
+    },
+    "docker compose": {
+        "explanation": "Docker Compose permite definir y ejecutar múltiples contenedores Docker como un servicio único.",
+        "steps": [
+            "Crea un archivo docker-compose.yml",
+            "Define servicios (web, base de datos, cache, etc.)",
+            "Ejecuta: docker-compose up",
+            "Detén los servicios: docker-compose down",
+            "Ver logs: docker-compose logs -f"
+        ],
+        "security_tips": [
+            "No incluyas contraseñas en docker-compose.yml",
+            "Usa variables de entorno para datos sensibles",
+            "Aísla redes entre servicios",
+            "Usa volúmenes nombrados en lugar de bind mounts"
+        ]
+    },
+    "docker images": {
+        "explanation": "Las imágenes Docker son plantillas de solo lectura que contienen todo lo necesario para ejecutar una aplicación.",
+        "steps": [
+            "Listar imágenes: docker images",
+            "Buscar imágenes: docker search nombre",
+            "Descargar imagen: docker pull nombre:tag",
+            "Construir imagen: docker build -t nombre:tag .",
+            "Eliminar imagen: docker rmi nombre:tag"
+        ],
+        "security_tips": [
+            "Usa tags específicos en lugar de 'latest'",
+            "Revisa el Dockerfile antes de usar una imagen",
+            "Mantén un registro de imágenes autorizadas",
+            "Escanea regularmente imágenes para vulnerabilidades"
+        ]
+    },
+    "docker containers": {
+        "explanation": "Los contenedores Docker son instancias en ejecución de imágenes Docker, proporcionando un entorno aislado para aplicaciones.",
+        "steps": [
+            "Ejecutar contenedor: docker run -d nombre-imagen",
+            "Listar contenedores activos: docker ps",
+            "Listar todos los contenedores: docker ps -a",
+            "Acceder a un contenedor: docker exec -it id-contenedor bash",
+            "Detener contenedor: docker stop id-contenedor"
+        ],
+        "security_tips": [
+            "Usa limites de recursos: --memory, --cpus",
+            "Ejecuta contenedores en modo read-only cuando sea posible",
+            "No expongs puertos innecesarios",
+            "Usa redes personalizadas para aislar contenedores"
+        ]
+    }
+}

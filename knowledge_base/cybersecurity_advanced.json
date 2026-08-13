@@ -1,0 +1,82 @@
+{
+    "malware": {
+        "explanation": "Malware es software malicioso diseñado para dañar tu computadora, robar datos o tomar control del sistema.",
+        "steps": [
+            "Instala un antivirus confiable (Windows Defender, Bitdefender, Norton)",
+            "Mantén el antivirus actualizado",
+            "Ejecuta escaneos regulares: Configuración > Virus y protección",
+            "Aísla archivos sospechosos en cuarentena",
+            "Nunca ejecutes archivos de fuentes desconocidas"
+        ],
+        "security_tips": [
+            "Descarga software solo de fuentes oficiales",
+            "Desconfía de emails con adjuntos sospechosos",
+            "No hagas clic en enlaces de emails desconocidos",
+            "Usa un antivirus en tiempo real siempre"
+        ]
+    },
+    "phishing": {
+        "explanation": "Phishing es un ataque que intenta engañarte para revelar información sensible mediante emails o sitios falsos.",
+        "steps": [
+            "Verifica la dirección de email del remitente",
+            "Busca errores de ortografía en el mensaje",
+            "Pasa el ratón sobre enlaces para ver la URL real",
+            "Nunca hagas clic en enlaces de emails sospechosos",
+            "Accede a sitios escribiendo la URL directamente"
+        ],
+        "security_tips": [
+            "Los bancos nunca piden datos por email",
+            "Desconfía de urgencia artificial en mensajes",
+            "Verifica dominios cuidadosamente (amazon.com vs amaz0n.com)",
+            "Usa autenticación de dos factores"
+        ]
+    },
+    "ransomware": {
+        "explanation": "Ransomware es malware que encripta tus archivos y exige dinero para desencriptarlos.",
+        "steps": [
+            "Mantén backups regulares en disco externo",
+            "Desconecta backups de internet después de crear",
+            "Mantén software actualizado",
+            "No abras archivos de fuentes desconocidas",
+            "Considera usar software anti-ransomware"
+        ],
+        "security_tips": [
+            "La regla 3-2-1: 3 copias, 2 medios, 1 fuera del sitio",
+            "Nunca pagues rescates (no garantiza recuperación)",
+            "Aísla inmediatamente máquinas infectadas",
+            "Reporta a autoridades"
+        ]
+    },
+    "password_security": {
+        "explanation": "Contraseñas fuertes son la primera línea de defensa contra acceso no autorizado.",
+        "steps": [
+            "Crea contraseñas de al menos 12 caracteres",
+            "Usa mayúsculas, minúsculas, números y símbolos",
+            "No uses información personal (nombres, fechas)",
+            "Usa contraseñas diferentes para cada sitio",
+            "Usa un gestor de contraseñas (Bitwarden, 1Password)"
+        ],
+        "security_tips": [
+            "Cambia contraseñas regularmente",
+            "Nunca compartas contraseñas",
+            "Usa autenticación de dos factores",
+            "Desconfía de sitios que no permiten contraseñas fuertes"
+        ]
+    },
+    "two_factor_authentication": {
+        "explanation": "La autenticación de dos factores añade una capa extra de seguridad requiriendo dos formas de verificación.",
+        "steps": [
+            "Ve a Configuración de Seguridad de tu cuenta",
+            "Busca Autenticación de Dos Factores o 2FA",
+            "Elige entre SMS, aplicación autenticadora o clave de seguridad",
+            "Sigue los pasos de configuración",
+            "Guarda códigos de recuperación en lugar seguro"
+        ],
+        "security_tips": [
+            "Prefiere aplicaciones autenticadoras sobre SMS",
+            "Las claves de seguridad son lo más seguro",
+            "Guarda códigos de recuperación de forma segura",
+            "Habilita 2FA en todas las cuentas importantes"
+        ]
+    }
+}

@@ -1,0 +1,82 @@
+{
+    "firewall": {
+        "explanation": "Un firewall es un sistema de seguridad que monitorea y controla el tráfico de red entrante y saliente, bloqueando conexiones no autorizadas.",
+        "steps": [
+            "En Windows: Abre Configuración > Privacidad y seguridad > Seguridad de Windows > Firewall",
+            "Activa el firewall de Windows",
+            "Configura reglas personalizadas para aplicaciones",
+            "Permite solo el tráfico necesario",
+            "Revisa regularmente el registro de actividad"
+        ],
+        "security_tips": [
+            "Mantén el firewall siempre activado",
+            "Configura reglas específicas por aplicación",
+            "Bloquea puertos innecesarios",
+            "Usa un firewall de hardware además del software"
+        ]
+    },
+    "vpn": {
+        "explanation": "Una VPN (Red Privada Virtual) encripta tu conexión a internet y oculta tu dirección IP, protegiendo tu privacidad.",
+        "steps": [
+            "Elige un proveedor VPN confiable",
+            "Descarga e instala la aplicación VPN",
+            "Abre la aplicación y conéctate a un servidor",
+            "Verifica que tu IP ha cambiado",
+            "Navega con privacidad protegida"
+        ],
+        "security_tips": [
+            "Usa solo VPNs de confianza",
+            "Verifica que la VPN tiene política de no-logs",
+            "Usa VPN en redes públicas (WiFi de cafés)",
+            "Elige servidores cercanos para mejor velocidad"
+        ]
+    },
+    "ssl_tls": {
+        "explanation": "SSL/TLS son protocolos de encriptación que protegen la comunicación entre tu navegador y un sitio web.",
+        "steps": [
+            "Busca el candado en la barra de direcciones",
+            "Verifica que la URL comienza con https://",
+            "Haz clic en el candado para ver el certificado",
+            "Revisa que el certificado es válido",
+            "Desconfía de advertencias de certificado"
+        ],
+        "security_tips": [
+            "Siempre usa HTTPS en sitios sensibles",
+            "Desconfía de sitios sin certificado válido",
+            "Verifica que el dominio coincide con el certificado",
+            "Usa certificados autofirmados solo en desarrollo"
+        ]
+    },
+    "dns_security": {
+        "explanation": "DNS es el sistema que traduce nombres de dominio a direcciones IP. DNS seguro protege contra ataques de phishing.",
+        "steps": [
+            "Abre Configuración de Red",
+            "Cambia el servidor DNS a uno seguro (1.1.1.1, 8.8.8.8)",
+            "Verifica los cambios: nslookup google.com",
+            "Considera usar un DNS que bloquea malware",
+            "Reinicia tu conexión de red"
+        ],
+        "security_tips": [
+            "Usa DNS de proveedores confiables",
+            "Considera DNS que bloquea malware",
+            "No uses DNS públicos no verificados",
+            "Habilita DNSSEC cuando sea posible"
+        ]
+    },
+    "port_security": {
+        "explanation": "Los puertos son puntos de conexión en tu computadora. Cerrar puertos innecesarios reduce la superficie de ataque.",
+        "steps": [
+            "Abre PowerShell como administrador",
+            "Lista puertos abiertos: netstat -an",
+            "Identifica puertos sospechosos",
+            "Cierra puertos innecesarios en el firewall",
+            "Verifica cambios: netstat -an nuevamente"
+        ],
+        "security_tips": [
+            "Cierra todos los puertos excepto los necesarios",
+            "Cambia puertos por defecto (SSH de 22 a otro)",
+            "Usa puerto knocking para acceso remoto",
+            "Monitorea regularmente puertos abiertos"
+        ]
+    }
+}

@@ -1,0 +1,35 @@
+{
+    "cd": {
+        "explanation": "El comando 'cd' (Change Directory) se utiliza para cambiar el directorio de trabajo actual en la línea de comandos de Windows.",
+        "steps": [
+            "Escribe 'cd' seguido de un espacio y el nombre de la carpeta a la que quieres ir.",
+            "Ejemplo: 'cd Documents' te llevará a la carpeta de Documentos.",
+            "Para retroceder una carpeta, escribe 'cd ..'"
+        ],
+        "security_tips": [
+            "Asegúrate de no entrar en directorios del sistema a menos que sepas lo que estás haciendo.",
+            "Usa comillas si el nombre de la carpeta tiene espacios, ej: cd 'Mis Documentos'"
+        ]
+    },
+    "dir": {
+        "explanation": "El comando 'dir' muestra una lista de archivos y subdirectorios en el directorio actual.",
+        "steps": [
+            "Simplemente escribe 'dir' y presiona Enter.",
+            "Puedes usar 'dir /p' para ver la lista página por página.",
+            "Usa 'dir /w' para un formato de lista ancha."
+        ],
+        "security_tips": [
+            "Revisa los archivos ocultos con 'dir /a' para detectar archivos sospechosos."
+        ]
+    },
+    "ipconfig": {
+        "explanation": "Muestra todos los valores actuales de la configuración de red TCP/IP.",
+        "steps": [
+            "Escribe 'ipconfig' para ver tu dirección IP local y puerta de enlace.",
+            "Usa 'ipconfig /all' para ver detalles técnicos como la dirección MAC."
+        ],
+        "security_tips": [
+            "No compartas tu dirección IP pública o detalles de ipconfig con desconocidos en internet."
+        ]
+    }
+}

@@ -1,0 +1,37 @@
+{
+    "powershell": {
+        "explanation": "PowerShell es un shell de línea de comandos y un lenguaje de scripting desarrollado por Microsoft. Es más potente que CMD para la administración de sistemas.",
+        "steps": [
+            "Abre PowerShell buscando en el menú de inicio.",
+            "Los comandos en PowerShell se llaman cmdlets y siguen el formato Verbo-Sustantivo (ej. Get-Process).",
+            "Usa Get-Help para obtener información sobre cualquier cmdlet, ej: Get-Help Get-Service."
+        ],
+        "security_tips": [
+            "Ejecuta scripts de PowerShell solo de fuentes confiables.",
+            "Configura la política de ejecución de scripts para evitar la ejecución no autorizada: Set-ExecutionPolicy RemoteSigned."
+        ]
+    },
+    "Get-Process": {
+        "explanation": "El cmdlet Get-Process se utiliza para obtener los procesos que se están ejecutando en un equipo local o remoto.",
+        "steps": [
+            "Escribe Get-Process para ver todos los procesos en ejecución.",
+            "Usa Get-Process -Name chrome para ver solo los procesos de Chrome.",
+            "Puedes filtrar por ID: Get-Process -Id 1234."
+        ],
+        "security_tips": [
+            "Identifica procesos desconocidos o sospechosos que consuman muchos recursos.",
+            "No termines procesos del sistema a menos que sepas lo que haces (Stop-Process)."
+        ]
+    },
+    "Get-Service": {
+        "explanation": "El cmdlet Get-Service obtiene los servicios que se están ejecutando en el equipo.",
+        "steps": [
+            "Escribe Get-Service para listar todos los servicios.",
+            "Usa Get-Service | Where-Object {$_.Status -eq \"Running\"} para ver solo los servicios en ejecución."
+        ],
+        "security_tips": [
+            "Deshabilita servicios innecesarios para reducir la superficie de ataque.",
+            "Asegúrate de que los servicios críticos del sistema estén siempre en ejecución."
+        ]
+    }
+}

@@ -1,0 +1,91 @@
+{
+    "git": {
+        "explanation": "Git es un sistema de control de versiones distribuido que permite rastrear cambios en archivos y colaborar con otros desarrolladores. Es la herramienta más popular en la industria del software.",
+        "steps": [
+            "Instala Git desde https://git-scm.com/",
+            "Configura tu nombre y email: git config --global user.name 'Tu Nombre' y git config --global user.email 'tu@email.com'",
+            "Crea un repositorio: git init en tu carpeta de proyecto",
+            "Añade archivos: git add . para preparar cambios",
+            "Realiza un commit: git commit -m 'Mensaje descriptivo' para guardar cambios"
+        ],
+        "security_tips": [
+            "Nunca hagas commit de archivos con contraseñas o claves secretas",
+            "Usa un archivo .gitignore para excluir archivos sensibles",
+            "Protege tu rama main con reglas de revisión de código",
+            "Usa SSH en lugar de HTTPS para mayor seguridad"
+        ]
+    },
+    "git clone": {
+        "explanation": "El comando git clone descarga un repositorio remoto a tu máquina local, incluyendo todo el historial de cambios.",
+        "steps": [
+            "Obtén la URL del repositorio (HTTPS o SSH)",
+            "Ejecuta: git clone <URL>",
+            "Se creará una carpeta con el nombre del repositorio",
+            "Entra en la carpeta: cd nombre-del-repositorio",
+            "Ahora tienes acceso a todo el código y el historial"
+        ],
+        "security_tips": [
+            "Verifica que estés clonando desde un repositorio confiable",
+            "Revisa el contenido del repositorio antes de ejecutar código",
+            "Usa HTTPS con autenticación de dos factores si es posible"
+        ]
+    },
+    "git branch": {
+        "explanation": "Las ramas permiten trabajar en diferentes características sin afectar el código principal. Cada rama es una línea independiente de desarrollo.",
+        "steps": [
+            "Ver ramas locales: git branch",
+            "Ver todas las ramas: git branch -a",
+            "Crear una rama: git branch nombre-rama",
+            "Cambiar a una rama: git checkout nombre-rama",
+            "Crear y cambiar en un comando: git checkout -b nombre-rama"
+        ],
+        "security_tips": [
+            "Usa nombres descriptivos para las ramas (feature/login, bugfix/password-reset)",
+            "Elimina ramas antiguas: git branch -d nombre-rama",
+            "Protege la rama main para evitar cambios directos"
+        ]
+    },
+    "git merge": {
+        "explanation": "El merge combina cambios de una rama a otra, típicamente integrando una rama de características en la rama principal.",
+        "steps": [
+            "Asegúrate de estar en la rama destino: git checkout main",
+            "Actualiza: git pull origin main",
+            "Realiza el merge: git merge nombre-rama",
+            "Si hay conflictos, resuélvelos manualmente",
+            "Realiza un commit del merge: git commit -m 'Merge rama-x en main'"
+        ],
+        "security_tips": [
+            "Revisa siempre los cambios antes de hacer merge",
+            "Usa pull requests para revisión de código",
+            "Requiere aprobación antes de mergear a main"
+        ]
+    },
+    "git push": {
+        "explanation": "El comando git push sube tus cambios locales a un repositorio remoto, compartiendo tu trabajo con otros.",
+        "steps": [
+            "Realiza commits locales: git commit -m 'Mensaje'",
+            "Sube los cambios: git push origin nombre-rama",
+            "Para la primera vez en una rama: git push -u origin nombre-rama",
+            "Verifica que los cambios se subieron correctamente"
+        ],
+        "security_tips": [
+            "Nunca hagas push de datos sensibles",
+            "Usa SSH keys en lugar de contraseñas",
+            "Revisa qué estás subiendo antes de hacer push"
+        ]
+    },
+    "git pull": {
+        "explanation": "El comando git pull descarga cambios remotos e integra automáticamente en tu rama local.",
+        "steps": [
+            "Ejecuta: git pull origin nombre-rama",
+            "Git automáticamente hace fetch y merge",
+            "Si hay conflictos, resuélvelos",
+            "Verifica que los cambios se integraron correctamente"
+        ],
+        "security_tips": [
+            "Haz pull regularmente para mantener tu código actualizado",
+            "Revisa los cambios después de hacer pull",
+            "Resuelve conflictos cuidadosamente"
+        ]
+    }
+}

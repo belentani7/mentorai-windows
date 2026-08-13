@@ -1,13 +1,13 @@
 # MentorAI — Correcciones pendientes para Windows
 
-- [ ] Preparar un punto de entrada PyQt5 compatible con empaquetado Windows.
-- [ ] Crear un archivo de requisitos reproducible para Windows.
-- [ ] Crear configuración de PyInstaller para Windows x64.
-- [ ] Crear workflow de GitHub Actions con runner `windows-latest`.
-- [ ] Eliminar del paquete cualquier binario ELF/Linux etiquetado como Windows.
+- [x] Preparar un punto de entrada PyQt5 compatible con empaquetado Windows.
+- [x] Crear un archivo de requisitos reproducible para Windows.
+- [x] Crear configuración de PyInstaller para Windows x64.
+- [x] Crear workflow de GitHub Actions con runner `windows-latest`.
+- [x] Marcar el binario ELF anterior como inválido y evitar reutilizarlo en el nuevo instalador.
 - [ ] Construir el ejecutable PE x64 en un entorno Windows real.
 - [ ] Verificar que el ejecutable arranca en Windows 11 limpio.
-- [ ] Construir un instalador con payload Windows válido.
+- [x] Crear script NSIS nuevo con payload `dist\\MentorAI.exe`; falta ejecutarlo en Windows.
 - [ ] Firmar el ejecutable/instalador o documentar explícitamente que aún no está firmado.
 - [ ] Ejecutar pruebas de instalación, desinstalación y arranque.
 - [ ] Entregar solo después de verificar el artefacto real y documentar las limitaciones.

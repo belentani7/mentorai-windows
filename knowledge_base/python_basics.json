@@ -1,0 +1,24 @@
+{
+    "python": {
+        "explanation": "Python es un lenguaje de programación versátil y fácil de aprender, ideal para principiantes y expertos.",
+        "steps": [
+            "Instala Python desde python.org.",
+            "Usa 'pip install nombre_paquete' para instalar librerías.",
+            "Escribe tu código en archivos con extensión .py."
+        ],
+        "security_tips": [
+            "Nunca ejecutes scripts de Python de fuentes no confiables.",
+            "Usa entornos virtuales (venv) para mantener tus proyectos aislados."
+        ]
+    },
+    "print": {
+        "explanation": "La función 'print()' se usa para mostrar mensajes o valores en la consola.",
+        "steps": [
+            "Escribe print('Hola Mundo') para ver el texto en pantalla.",
+            "Puedes imprimir variables: print(mi_variable)."
+        ],
+        "security_tips": [
+            "Evita imprimir información sensible como contraseñas en los logs de producción."
+        ]
+    }
+}

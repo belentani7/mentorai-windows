@@ -1,0 +1,26 @@
+{
+    "binance": {
+        "explanation": "Binance es una plataforma de intercambio de criptomonedas. Es fundamental usarla con precaución.",
+        "steps": [
+            "Activa siempre la Autenticación de Dos Factores (2FA).",
+            "Verifica que la URL sea exactamente 'binance.com' antes de ingresar tus datos.",
+            "Nunca compartas tus códigos de verificación con nadie, ni siquiera con el soporte técnico."
+        ],
+        "security_tips": [
+            "Usa una contraseña única y compleja para tu cuenta.",
+            "Habilita el código anti-phishing en los correos electrónicos de Binance."
+        ]
+    },
+    "trust wallet": {
+        "explanation": "Trust Wallet es una billetera de criptomonedas descentralizada y no custodial.",
+        "steps": [
+            "Guarda tu frase semilla (12-24 palabras) en un papel físico y fuera de internet.",
+            "Nunca ingreses tu frase semilla en ningún sitio web o aplicación que no sea la oficial de Trust Wallet.",
+            "Si pierdes tu frase semilla, pierdes el acceso a tus fondos para siempre."
+        ],
+        "security_tips": [
+            "Desconecta siempre tu billetera de los sitios de dApps (WalletConnect) después de usarlos.",
+            "No confíes en capturas de pantalla de códigos QR que prometen premios."
+        ]
+    }
+}

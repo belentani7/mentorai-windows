@@ -1,0 +1,49 @@
+{
+    "adb": {
+        "explanation": "Android Debug Bridge (adb) es una herramienta de línea de comandos que permite comunicarte con un dispositivo Android.",
+        "steps": [
+            "Activa las Opciones de desarrollador en tu teléfono.",
+            "Habilita la Depuración USB.",
+            "Conecta el teléfono a tu PC y usa adb devices para verificar la conexión."
+        ],
+        "security_tips": [
+            "Desactiva la depuración USB cuando no la estés usando para evitar accesos no autorizados.",
+            "Solo autoriza computadoras en las que confíes plenamente."
+        ]
+    },
+    "termux": {
+        "explanation": "Termux es un emulador de terminal para Android que permite ejecutar un entorno Linux.",
+        "steps": [
+            "Instala Termux desde F-Droid para obtener la versión más actualizada.",
+            "Usa pkg update && pkg upgrade para actualizar los paquetes.",
+            "Puedes instalar herramientas como git, python y clang."
+        ],
+        "security_tips": [
+            "Ten cuidado con los scripts que solicitan permisos de almacenamiento en Android."
+        ]
+    },
+    "developer options": {
+        "explanation": "Las Opciones de Desarrollador en Android permiten acceder a configuraciones avanzadas para depuración y desarrollo de aplicaciones.",
+        "steps": [
+            "Ve a Ajustes > Acerca del teléfono y toca el Número de compilación 7 veces para activarlas.",
+            "Se encuentran en Ajustes > Sistema > Opciones de desarrollador.",
+            "Aquí puedes activar la Depuración USB, cambiar la velocidad de las animaciones, etc."
+        ],
+        "security_tips": [
+            "Desactiva las Opciones de Desarrollador cuando no las necesites para evitar configuraciones accidentales o acceso no autorizado.",
+            "Ten cuidado al activar opciones como Desbloqueo OEM o Depuración USB en dispositivos no seguros."
+        ]
+    },
+    "usb debugging": {
+        "explanation": "La Depuración USB permite que tu dispositivo Android se comunique con un ordenador a través de ADB.",
+        "steps": [
+            "Activa las Opciones de Desarrollador.",
+            "Dentro de Opciones de Desarrollador, busca y activa Depuración USB.",
+            "Cuando conectes el teléfono al PC, acepta la solicitud de Permitir depuración USB."
+        ],
+        "security_tips": [
+            "Nunca dejes la Depuración USB activada en un dispositivo que no esté bajo tu control directo.",
+            "Solo autoriza la depuración USB en ordenadores de confianza."
+        ]
+    }
+}
