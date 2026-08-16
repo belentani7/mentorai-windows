@@ -3,7 +3,7 @@
         "explanation": "Git es un sistema de control de versiones distribuido que permite rastrear cambios en archivos y colaborar con otros desarrolladores. Es la herramienta más popular en la industria del software.",
         "steps": [
             "Instala Git desde https://git-scm.com/",
-            "Configura tu nombre y email: git config --global user.name 'Tu Nombre' y git config --global user.email 'tu@email.com'",
+            "Configura tu nombre y email: git config --global user.name \"Tu Nombre\" y git config --global user.email \"<tu-correo>\"",
             "Crea un repositorio: git init en tu carpeta de proyecto",
             "Añade archivos: git add . para preparar cambios",
             "Realiza un commit: git commit -m 'Mensaje descriptivo' para guardar cambios"

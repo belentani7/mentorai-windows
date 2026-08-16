@@ -10,8 +10,9 @@ import json
 from pathlib import Path
 from datetime import datetime
 
-# Añadir el directorio core al path
-sys.path.insert(0, str(Path(__file__).parent))
+# Resolver rutas tanto desde el árbol fuente como desde una ejecución normal.
+APP_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(APP_ROOT))
 
 from core.assistant_engine import AssistantEngine
 from core.security_manager import SecurityManager
@@ -21,7 +22,7 @@ from core.gamification_system import GamificationSystem
 class MentorAIApp:
     def __init__(self):
         # Ruta a la base de conocimiento
-        kb_path = Path(__file__).parent / "knowledge_base"
+        kb_path = APP_ROOT / "knowledge_base"
         self.engine = AssistantEngine(str(kb_path))
         self.security = SecurityManager("mentorai_device_001")
         self.user_id = "user_001"

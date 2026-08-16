@@ -7,14 +7,17 @@ Pruebas de seguridad para detectar vulnerabilidades
 import sys
 import json
 import re
-sys.path.insert(0, '/home/ubuntu/asistente_educativo')
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 
 from core.assistant_engine import AssistantEngine
 from core.security_manager import SecurityManager
 
 class SecurityTester:
     def __init__(self):
-        self.engine = AssistantEngine('/home/ubuntu/asistente_educativo/knowledge_base')
+        self.engine = AssistantEngine(str(ROOT / 'knowledge_base'))
         self.security_mgr = SecurityManager(device_id='test_device_001')
         self.vulnerabilities = []
         self.passed_tests = []

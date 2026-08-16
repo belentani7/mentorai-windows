@@ -21,8 +21,10 @@ class PaymentFlowTester:
     
     def __init__(self):
         self.test_results = []
-        self.license_manager = LicenseManager(Path("/tmp/mentorai_test"))
-        self.payment_processor = StripePaymentProcessor()
+        self.test_dir = Path("/tmp/mentorai_test")
+        self.test_dir.mkdir(parents=True, exist_ok=True)
+        self.license_manager = LicenseManager(self.test_dir)
+        self.payment_processor = StripePaymentProcessor(app_dir=self.test_dir)
         self.test_count = 0
         self.passed_count = 0
     

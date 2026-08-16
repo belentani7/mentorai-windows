@@ -1,7 +1,13 @@
-from assistant_engine import AssistantEngine
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+
+from core.assistant_engine import AssistantEngine
 
 def test_engine():
-    kb_path = '/home/ubuntu/asistente_educativo/knowledge_base'
+    kb_path = ROOT / 'knowledge_base'
     engine = AssistantEngine(kb_path)
 
     # Test case 1: Windows CMD

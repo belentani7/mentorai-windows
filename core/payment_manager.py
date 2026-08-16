@@ -81,10 +81,10 @@ class LicenseManager:
 class StripePaymentProcessor:
     """Procesador de pagos con Stripe (simulado para desarrollo)"""
     
-    def __init__(self, stripe_key: Optional[str] = None):
+    def __init__(self, stripe_key: Optional[str] = None, app_dir=None, webhook_secret: Optional[str] = None):
         self.stripe_key = stripe_key or "sk_test_mentorai_dev"
-        self.license_manager = LicenseManager()
-        self.webhook_secret = "whsec_mentorai_dev"
+        self.license_manager = LicenseManager(app_dir=app_dir)
+        self.webhook_secret = webhook_secret or "whsec_mentorai_dev"
     
     def create_payment_session(self, email: str, product: str, amount: int) -> Dict:
         """

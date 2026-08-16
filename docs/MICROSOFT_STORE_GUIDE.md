@@ -45,11 +45,11 @@ MentorAI está desarrollado en Python con PyQt5. Para publicarlo en la Microsoft
 
 ### 3.1. Creación del Ejecutable con PyInstaller
 
-Ya hemos compilado el ejecutable `MentorAI-Windows` usando PyInstaller. Este es el binario principal que se incluirá en el paquete de la tienda.
+El workflow de GitHub Actions compila `dist/MentorAI.exe` nativamente en Windows x64. Ese es el binario que debe incluirse en el paquete de la tienda; no se debe reutilizar ningún archivo antiguo llamado `MentorAI-Windows`.
 
 ```bash
 cd /home/ubuntu/asistente_educativo
-pyinstaller --noconsole --onefile --windowed --icon=assets/mentorai.ico ui/mentorai_windows_ui.py
+python -m PyInstaller --clean --noconfirm mentorai_windows.spec
 ```
 
 **Nota:** Asegúrate de que el archivo `mentorai.ico` esté presente en la carpeta `assets/` y sea un icono de alta resolución.
@@ -101,7 +101,7 @@ Este archivo XML describe tu aplicación. Necesitarás crear uno con la informac
 
   <Applications>
     <Application Id="App"
-      Executable="MentorAI-Windows.exe"
+      Executable="MentorAI.exe"
       EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
         DisplayName="MentorAI"
@@ -123,7 +123,7 @@ Este archivo XML describe tu aplicación. Necesitarás crear uno con la informac
 **Importante:**
 *   `[TU_ID_PAQUETE]`: Un ID único que obtendrás del Centro de Partners.
 *   `[TU_NOMBRE_EDITOR]`: El nombre de tu editor, también del Centro de Partners.
-*   `Executable`: Debe apuntar a tu ejecutable PyInstaller (`MentorAI-Windows.exe`).
+*   `Executable`: Debe apuntar al ejecutable Windows generado por CI (`MentorAI.exe`).
 *   `Assets`: Asegúrate de tener los iconos y logos en las dimensiones correctas en una carpeta `Assets`.
 
 #### 3.2.3. Creación del Paquete MSIX
