@@ -1,4 +1,16 @@
 {
+    "android": {
+        "explanation": "Android es un sistema operativo móvil. Para aprender de forma segura conviene distinguir entre el uso normal del teléfono, las Opciones de Desarrollador y las herramientas de depuración como ADB.",
+        "steps": [
+            "Empieza en Ajustes y localiza la versión de Android y el modelo del dispositivo.",
+            "Activa las Opciones de Desarrollador solo si necesitas una función de aprendizaje o depuración.",
+            "Antes de cambiar una opción avanzada, anota su valor original y vuelve a desactivarla cuando termines."
+        ],
+        "security_tips": [
+            "Instala aplicaciones desde fuentes confiables y revisa sus permisos.",
+            "No actives Depuración USB o Desbloqueo OEM sin entender el riesgo y sin controlar el ordenador conectado."
+        ]
+    },
     "adb": {
         "explanation": "Android Debug Bridge (adb) es una herramienta de línea de comandos que permite comunicarte con un dispositivo Android.",
         "steps": [

@@ -8,6 +8,13 @@ project_root = Path(SPEC).resolve().parent
 
 hiddenimports = []
 hiddenimports += collect_submodules("PyQt5")
+for optional_module in ("pytesseract", "PIL", "uiautomation"):
+    try:
+        hiddenimports += collect_submodules(optional_module)
+    except Exception:
+        # El build sigue siendo válido sin los extras opcionales; la UI mostrará
+        # una explicación en lugar de fallar al arrancar.
+        pass
 
 # La base de conocimiento debe estar dentro del bundle para que la aplicación
 # no dependa del directorio de trabajo del usuario.

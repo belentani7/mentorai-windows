@@ -22,3 +22,13 @@
 
 No afirmar que existe un ejecutable Windows funcional hasta confirmar que el archivo es PE x64 y que arranca en Windows 11 limpio.
 
+## Construcción del software Windows real
+
+- [x] Consolidar la aplicación PyQt como punto de entrada único y funcional.
+- [x] Corregir las incompatibilidades entre motor, CLI, gamificación y persistencia local.
+- [x] Sustituir las afirmaciones de cifrado simulado por almacenamiento local autenticado real o documentar claramente cualquier limitación.
+- [x] Implementar Professor Mode con activación explícita y captura local segura; no enviar capturas ni texto fuera del dispositivo.
+- [x] Añadir pruebas de arranque, consulta, persistencia, borrado y manejo de datos sensibles.
+- [ ] Preparar una compilación Windows nativa reproducible y validarla después en una máquina Windows 11 real vinculada.
+- [ ] No declarar el producto como 10/10, listo para vender o conforme legalmente sin pruebas y revisión profesional correspondientes.
+

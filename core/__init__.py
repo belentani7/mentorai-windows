@@ -1,0 +1,1 @@
+"""Núcleo local de MentorAI."""

@@ -1,4 +1,6 @@
-# Dependencias de ejecución y empaquetado para MentorAI Windows x64
 PyQt5==5.15.11
 cryptography==43.0.3
 PyInstaller==6.11.1
+Pillow==12.3.0
+pytesseract==0.3.13
+uiautomation==2.0.29; sys_platform == "win32"

@@ -1,43 +1,54 @@
+"""Orquestación segura de Professor Mode.
+
+El diseño es deliberadamente de activación explícita: no hay listener global de
+teclado, captura periódica ni lectura automática. La UI llama a estos métodos
+solo después de una acción visible del usuario.
+"""
+
+from __future__ import annotations
+
 import platform
-import sys
-import os
+from typing import Any
 
-# Añadir el directorio de módulos nativos al path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'native_modules')))
-
-from windows_screen_reader import WindowsScreenReader
-from android_screen_reader import AndroidScreenReader
 
 class ScreenOrchestrator:
-    def __init__(self):
+    def __init__(self) -> None:
         self.os_name = platform.system()
+        self.reader = None
         if self.os_name == "Windows":
+            from native_modules.windows_screen_reader import WindowsScreenReader
+
             self.reader = WindowsScreenReader()
-        elif self.os_name == "Linux": # Android suele identificarse como Linux en Python
-            # En un entorno real, detectaríamos si es Android específicamente
-            self.reader = AndroidScreenReader()
-        else:
-            self.reader = None
 
-    def capture_and_process(self, mode="accessibility", area=None):
-        if not self.reader:
-            return "Sistema operativo no soportado para lectura de pantalla."
+    @property
+    def available(self) -> bool:
+        return self.reader is not None
 
-        if self.os_name == "Windows":
-            if mode == "accessibility":
-                return self.reader.get_text_at_cursor()
-            elif mode == "ocr" and area:
-                return self.reader.get_text_from_area(*area)
-        
-        elif self.os_name == "Linux": # Android simulation
-            if mode == "accessibility":
-                return self.reader.get_screen_content()
-            elif mode == "ocr":
-                return self.reader.perform_ocr("path/to/temp/image.png")
+    def capabilities(self) -> dict[str, bool]:
+        if self.reader is None:
+            return {"ui_automation": False, "local_ocr": False}
+        return self.reader.capabilities()
 
-        return "Modo de captura no válido."
+    def read_focused_text(self) -> str:
+        """Lee solo el control actualmente enfocado tras confirmación del usuario."""
+        if self.reader is None:
+            return "Professor Mode requiere Windows 10/11 para UI Automation."
+        return self.reader.get_text_at_cursor()
 
-if __name__ == "__main__":
-    orchestrator = ScreenOrchestrator()
-    print(f"Sistema detectado: {orchestrator.os_name}")
-    print(f"Resultado captura: {orchestrator.capture_and_process()}")
+    def read_selected_area(self, image: Any, box: tuple[int, int, int, int]) -> str:
+        """Procesa un recorte ya seleccionado; no captura la pantalla por sí solo."""
+        if self.reader is None:
+            return "El OCR de área requiere Windows 10/11."
+        return self.reader.get_text_from_area(image, box)
+
+    def capture_and_process(self, mode: str = "accessibility", area: Any = None) -> str:
+        """Compatibilidad con el API anterior, manteniendo la activación manual."""
+        if mode == "accessibility":
+            return self.read_focused_text()
+        if mode == "ocr" and area is not None:
+            try:
+                image, box = area
+                return self.read_selected_area(image, box)
+            except (TypeError, ValueError):
+                return "El OCR necesita una imagen y un rectángulo de recorte válidos."
+        return "Modo de lectura no válido."

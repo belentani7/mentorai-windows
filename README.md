@@ -1,39 +1,80 @@
-# MentorAI: Tu Guía Inteligente para el Mundo Digital
+# MentorAI para Windows
 
-![MentorAI Logo Concept](https://via.placeholder.com/150x150/007AFF/FFFFFF?text=MentorAI)
+MentorAI es un **profesor local de informática** para Windows 10/11. Ayuda a comprender informática básica, CMD, PowerShell, Python, Git, Docker, Android, Termux y seguridad digital mediante explicaciones y pasos guiados. No es un agente autónomo: **no ejecuta comandos, no hace clic, no modifica el sistema y no observa la pantalla en segundo plano**.
 
-## Slogan
-"Tu guía inteligente para el mundo digital: Aprende, Protege, Domina."
+## Qué funciona en esta versión
 
-## Descripción General
-MentorAI es un asistente educativo multiplataforma (Windows 11 y Android) diseñado para empoderar a los usuarios en el aprendizaje de la informática básica, la programación y la seguridad digital. A diferencia de las IAs generativas, MentorAI actúa como un "profesor" interactivo, proporcionando guía contextual en tiempo real sobre lo que el usuario ve en su pantalla, con un enfoque inquebrantable en la privacidad y el procesamiento local de datos.
+La aplicación de escritorio está implementada con PyQt5 y usa una base de conocimiento JSON que se empaqueta junto al ejecutable. Incluye navegación y filtrado de temas, preguntas en lenguaje natural, reconocimiento tolerante de errores de escritura, respuestas con pasos y consejos de seguridad, idioma de interfaz en español, inglés, portugués y catalán, progreso local, historial local cifrado y eliminación explícita de los datos.
 
-## Características Principales
-*   **Aprendizaje Interactivo:** Obtén explicaciones y pasos guiados directamente en el contexto de tu pantalla.
-*   **Privacidad por Diseño:** Todo el procesamiento de datos se realiza localmente en tu dispositivo. Ningún dato sensible abandona tu máquina.
-*   **Seguridad Avanzada:** Implementa filtrado de datos sensibles y cifrado local para proteger tu información.
-*   **Multiplataforma:** Soporte nativo para Windows 11 y Android, con una experiencia de usuario consistente.
-*   **Contenido Educativo Amplio:** Aprende sobre CMD, PowerShell, Python, opciones de desarrollador de Android, Termux, y seguridad en plataformas como Binance y Trust Wallet.
-*   **Accesibilidad Primero:** Diseñado para ser inclusivo, con soporte para APIs de accesibilidad y opciones de alto contraste.
+El núcleo funciona sin conexión de red. Las consultas y respuestas guardadas se cifran con AES-256-GCM; en Windows, la clave maestra se protege mediante DPAPI para ligarla a la cuenta local. En sistemas que no son Windows existe un fallback restringido para ejecutar pruebas de desarrollo, pero la garantía objetivo del producto Windows se basa en DPAPI.
 
-## Cómo Funciona
-MentorAI utiliza una combinación de APIs de accesibilidad del sistema operativo y tecnología OCR local para "leer" el texto en tu pantalla. Cuando activas el asistente (mediante una HotKey en Windows o un gesto en Android) y seleccionas un texto o área, MentorAI analiza el contenido y te proporciona explicaciones, pasos a seguir y consejos de seguridad relevantes de su base de conocimiento local.
+## Professor Mode
 
-## Stack Tecnológico
-*   **Interfaz de Usuario:** React Native (con React Native for Windows)
-*   **Lógica Principal (Core):** Python
-*   **Lectura de Pantalla:** Windows UI Automation (UIA) / Android Accessibility Service
-*   **OCR Local:** Windows.Media.Ocr API / Google ML Kit (On-device Text Recognition)
-*   **Base de Datos Local:** SQLite
+Professor Mode se activa de forma visible mediante el botón **Seleccionar área OCR** o el atajo `Ctrl+Shift+M`. La aplicación congela temporalmente una imagen de la pantalla principal para que el usuario arrastre un rectángulo sobre el texto. Al soltar el botón, el recorte se transforma en memoria y se ofrece al OCR local opcional; no se guarda como archivo ni se sube a un servidor. También existe **Leer control enfocado**, que intenta obtener el nombre y el valor accesible del control que tenga el foco mediante Windows UI Automation.
 
-## Instalación y Uso (Próximamente)
-Las instrucciones detalladas para la instalación y el uso en Windows y Android se proporcionarán aquí una vez que el proyecto alcance una fase de desarrollo más avanzada.
+La acción no es automática ni silenciosa. `Esc` cancela la selección, los controles de contraseña no se leen deliberadamente y el texto detectado solo se coloca en el campo de pregunta: el usuario debe revisarlo y pulsar **Preguntar**. Para disponer de las capacidades opcionales en Windows se pueden instalar los paquetes `uiautomation` y `pytesseract`, además del motor Tesseract OCR con los idiomas necesarios.
 
-## Contribución
-¡Agradecemos tus contribuciones! Por favor, consulta el archivo `CONTRIBUTING.md` para obtener más detalles sobre cómo puedes ayudar.
+## Ejecutar desde código fuente
 
-## Licencia
-Este proyecto está bajo la licencia MIT. Consulta el archivo `LICENSE.md` para más información.
+En Windows 10/11 con Python 3.12:
 
-## Contacto
-Para preguntas o soporte, por favor abre un issue en este repositorio de GitHub.
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements-windows.txt
+python ui\mentorai_windows_ui.py
+```
+
+La CLI de respaldo comparte el mismo motor y almacén local:
+
+```powershell
+python cli\mentorai_cli.py
+```
+
+La aplicación crea sus datos de usuario en `%LOCALAPPDATA%\MentorAI` en Windows. El directorio contiene SQLite local, la clave protegida y los archivos auxiliares de SQLite. No se debe copiar la clave a otro equipo.
+
+## Compilar el ejecutable Windows
+
+La compilación oficial se realiza en un runner `windows-latest` mediante GitHub Actions. El flujo instala las dependencias fijadas, construye `dist\MentorAI.exe` con PyInstaller, comprueba la firma inicial `MZ`, calcula SHA-256 y genera opcionalmente el instalador NSIS. También puede ejecutarse localmente en Windows:
+
+```powershell
+python -m PyInstaller --clean --noconfirm mentorai_windows.spec
+```
+
+El ejecutable y el instalador no se deben considerar verificados solo por existir o por comenzar con `MZ`: es necesario abrirlos en un Windows 11 limpio, probar consulta, persistencia, Professor Mode, instalación, desinstalación y borrado de datos.
+
+## Pruebas reproducibles
+
+Desde la raíz del repositorio:
+
+```powershell
+python tests\smoke_runtime.py
+python tests\security_tests.py
+python tests\multilingual_tests.py
+python tests\usability_tests_kid.py
+python tools\validate_repository.py
+```
+
+La prueba de humo comprueba carga de la base, búsqueda con errores de escritura, redacción de identificadores sensibles, cifrado autenticado, persistencia y borrado. Las pruebas heredadas de seguridad se conservan como regresión; no sustituyen una auditoría independiente ni un pentest profesional.
+
+## Privacidad, cumplimiento y límites
+
+MentorAI se ha diseñado con minimización de datos, procesamiento local, controles de borrado y activación explícita para pantalla. Eso es una **implementación técnica**, no una certificación jurídica automática. Antes de vender el producto en la Unión Europea hay que completar el inventario de tratamientos, la política de privacidad, la documentación de conservación y borrado, el análisis de riesgos, la revisión de dependencias, la firma de código y las pruebas en dispositivos objetivo con asesoramiento profesional cuando corresponda.
+
+No se incluyen secretos de clientes en el código. Las funciones de pago y licencias permanecen fuera del núcleo offline hasta que exista una integración remota explícita, documentada y protegida; la aplicación local no necesita una cuenta para enseñar los temas instalados.
+
+## Estructura
+
+```text
+core/                 Motor, cifrado, persistencia y Professor Mode
+ui/                   Aplicación PyQt5 para Windows
+cli/                  Interfaz de respaldo que usa el mismo core
+knowledge_base/       Temas educativos JSON
+native_modules/       Adaptadores de capacidades del sistema
+installer/            Script NSIS oficial
+tests/                Pruebas ejecutables y unitarias
+archive/              Prototipos retirados, no incluidos en el build
+```
+
+La estructura completa y sus reglas están documentadas en [`REPOSITORY_STRUCTURE.md`](REPOSITORY_STRUCTURE.md).

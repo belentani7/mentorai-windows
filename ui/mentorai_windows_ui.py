@@ -1,572 +1,720 @@
-#!/usr/bin/env python3
-"""
-MentorAI - Interfaz Gráfica Profesional para Windows
-Desarrollada con PyQt5
+"""MentorAI para Windows.
+
+Dirección de producto de esta interfaz: profesor calmado, claro y seguro. La
+jerarquía prioriza una pregunta a la vez, explicaciones legibles y controles
+visibles. El programa no ejecuta comandos, no observa en segundo plano y no
+transmite texto o capturas.
 """
 
+from __future__ import annotations
+
+import os
 import sys
-import json
-import sqlite3
 from pathlib import Path
-from datetime import datetime
+from typing import Any
+
+from PyQt5.QtCore import QThread, Qt, pyqtSignal
+from PyQt5.QtGui import QColor, QFont, QImage, QKeySequence, QPainter, QPixmap
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QLineEdit, QPushButton, QTextEdit, QListWidget, QListWidgetItem,
-    QTabWidget, QProgressBar, QComboBox, QMessageBox, QSplitter, QStatusBar
+    QApplication,
+    QComboBox,
+    QDialog,
+    QDialogButtonBox,
+    QFrame,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QListWidget,
+    QListWidgetItem,
+    QMainWindow,
+    QMessageBox,
+    QProgressBar,
+    QPushButton,
+    QRubberBand,
+    QShortcut,
+    QSplitter,
+    QStatusBar,
+    QTextBrowser,
+    QVBoxLayout,
+    QWidget,
 )
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer
-from PyQt5.QtGui import QFont, QColor, QIcon, QPixmap
-from PyQt5.QtCore import QSize
 
-import sys
-
-# Rutas compatibles con ejecución desde código fuente y con PyInstaller.
-# En modo congelado, los recursos se extraen en sys._MEIPASS.
 if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
     APP_ROOT = Path(sys._MEIPASS)
 else:
     APP_ROOT = Path(__file__).resolve().parents[1]
 
-sys.path.insert(0, str(APP_ROOT))
+if str(APP_ROOT) not in sys.path:
+    sys.path.insert(0, str(APP_ROOT))
 
 from core.assistant_engine import AssistantEngine
-from core.security_manager import SecurityManager
-from core.gamification_system import GamificationSystem
+from core.local_store import LocalStore
+from core.screen_orchestrator import ScreenOrchestrator
+from native_modules.windows_hotkey import WindowsProfessorHotkey
 
-
-class DatabaseManager:
-    """Gestor de base de datos local SQLite"""
-    
-    def __init__(self, db_path):
-        self.db_path = db_path
-        self.init_database()
-    
-    def init_database(self):
-        """Inicializar base de datos"""
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
-        # Tabla de usuario
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS user (
-                id TEXT PRIMARY KEY,
-                username TEXT,
-                language TEXT DEFAULT 'es',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        
-        # Tabla de progreso
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS progress (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id TEXT,
-                points INTEGER DEFAULT 0,
-                level INTEGER DEFAULT 1,
-                experience INTEGER DEFAULT 0,
-                streak INTEGER DEFAULT 0,
-                topics_completed INTEGER DEFAULT 0,
-                achievements TEXT DEFAULT '[]',
-                FOREIGN KEY(user_id) REFERENCES user(id)
-            )
-        ''')
-        
-        # Tabla de historial
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS history (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id TEXT,
-                question TEXT,
-                answer TEXT,
-                topic TEXT,
-                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY(user_id) REFERENCES user(id)
-            )
-        ''')
-        
-        conn.commit()
-        conn.close()
-    
-    def get_or_create_user(self, user_id):
-        """Obtener o crear usuario"""
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
-        cursor.execute('SELECT * FROM user WHERE id = ?', (user_id,))
-        user = cursor.fetchone()
-        
-        if not user:
-            cursor.execute('INSERT INTO user (id, username) VALUES (?, ?)', 
-                         (user_id, f"Usuario_{user_id[:8]}"))
-            conn.commit()
-        
-        conn.close()
-        return True
-    
-    def get_progress(self, user_id):
-        """Obtener progreso del usuario"""
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
-        cursor.execute('SELECT * FROM progress WHERE user_id = ?', (user_id,))
-        progress = cursor.fetchone()
-        
-        if not progress:
-            cursor.execute('''
-                INSERT INTO progress (user_id, points, level, experience, streak, topics_completed)
-                VALUES (?, 0, 1, 0, 0, 0)
-            ''', (user_id,))
-            conn.commit()
-            cursor.execute('SELECT * FROM progress WHERE user_id = ?', (user_id,))
-            progress = cursor.fetchone()
-        
-        conn.close()
-        return progress
-    
-    def update_progress(self, user_id, points=0, experience=0):
-        """Actualizar progreso del usuario"""
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
-        cursor.execute('''
-            UPDATE progress 
-            SET points = points + ?, experience = experience + ?
-            WHERE user_id = ?
-        ''', (points, experience, user_id))
-        
-        conn.commit()
-        conn.close()
-    
-    def save_query(self, user_id, question, answer, topic):
-        """Guardar pregunta en historial"""
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
-        cursor.execute('''
-            INSERT INTO history (user_id, question, answer, topic)
-            VALUES (?, ?, ?, ?)
-        ''', (user_id, question, answer, topic))
-        
-        conn.commit()
-        conn.close()
-    
-    def get_history(self, user_id, limit=10):
-        """Obtener historial de preguntas"""
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
-        cursor.execute('''
-            SELECT question, topic, timestamp FROM history
-            WHERE user_id = ?
-            ORDER BY timestamp DESC
-            LIMIT ?
-        ''', (user_id, limit))
-        
-        history = cursor.fetchall()
-        conn.close()
-        return history
+LANGUAGE_NAMES = {
+    "es": "Español",
+    "en": "English",
+    "pt": "Português",
+    "ca": "Català",
+}
 
 
 class QueryWorker(QThread):
-    """Worker thread para procesar queries sin bloquear UI"""
     finished = pyqtSignal(dict)
-    error = pyqtSignal(str)
-    
-    def __init__(self, engine, query, language):
+    failed = pyqtSignal(str)
+
+    def __init__(self, engine: AssistantEngine, query: str, language: str):
         super().__init__()
         self.engine = engine
         self.query = query
         self.language = language
-    
-    def run(self):
+
+    def run(self) -> None:
         try:
-            result = self.engine.process_query(self.query)
+            self.finished.emit(self.engine.process_query(self.query, self.language))
+        except Exception as exc:  # pragma: no cover - defensive UI boundary
+            self.failed.emit(str(exc))
+
+
+class ScreenReadWorker(QThread):
+    finished = pyqtSignal(str)
+    failed = pyqtSignal(str)
+
+    def __init__(self, orchestrator: ScreenOrchestrator, mode: str, image: Any = None):
+        super().__init__()
+        self.orchestrator = orchestrator
+        self.mode = mode
+        self.image = image
+
+    def run(self) -> None:
+        try:
+            if self.mode == "focused":
+                result = self.orchestrator.read_focused_text()
+            else:
+                result = self.orchestrator.read_selected_area(
+                    self.image,
+                    (0, 0, self.image.width(), self.image.height()),
+                )
             self.finished.emit(result)
-        except Exception as e:
-            self.error.emit(str(e))
+        except Exception as exc:  # pragma: no cover - defensive UI boundary
+            self.failed.emit(str(exc))
+
+
+class ScreenSelectionOverlay(QWidget):
+    """Capa temporal para que el usuario seleccione manualmente una región."""
+
+    selected = pyqtSignal(object)
+
+    def __init__(self, pixmap: QPixmap, geometry):
+        super().__init__(None)
+        self.pixmap = pixmap
+        self.origin = None
+        self.rubber_band = QRubberBand(QRubberBand.Rectangle, self)
+        self.setGeometry(geometry)
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)
+        self.setAttribute(Qt.WA_TranslucentBackground, False)
+        self.setCursor(Qt.CrossCursor)
+        self.setWindowTitle("MentorAI — Selección explícita")
+
+    def paintEvent(self, event):  # noqa: ARG002
+        painter = QPainter(self)
+        painter.drawPixmap(0, 0, self.pixmap)
+        painter.fillRect(self.rect(), QColor(10, 20, 30, 90))
+        painter.setPen(QColor("#ffffff"))
+        painter.setFont(QFont("Segoe UI", 12, QFont.Bold))
+        painter.drawText(
+            24,
+            34,
+            "MentorAI: arrastra sobre el texto que quieres explicar · Esc para cancelar",
+        )
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.close()
+            return
+        super().keyPressEvent(event)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.origin = event.pos()
+            self.rubber_band.setGeometry(self.origin.x(), self.origin.y(), 1, 1)
+            self.rubber_band.show()
+
+    def mouseMoveEvent(self, event):
+        if self.origin is not None:
+            self.rubber_band.setGeometry(self._selection_rect(event.pos()))
+
+    def mouseReleaseEvent(self, event):
+        if event.button() != Qt.LeftButton or self.origin is None:
+            return
+        rect = self._selection_rect(event.pos()).intersected(self.rect())
+        self.origin = None
+        self.rubber_band.hide()
+        if rect.width() < 4 or rect.height() < 4:
+            self.close()
+            return
+        self.selected.emit(self.pixmap.copy(rect))
+        self.close()
+
+    def _selection_rect(self, end):
+        return self._normalised_rect(self.origin, end)
+
+    @staticmethod
+    def _normalised_rect(start, end):
+        left, right = sorted((start.x(), end.x()))
+        top, bottom = sorted((start.y(), end.y()))
+        from PyQt5.QtCore import QRect
+
+        return QRect(left, top, right - left, bottom - top)
+
+
+class InfoDialog(QDialog):
+    def __init__(self, title: str, body: str, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(title)
+        self.resize(620, 460)
+        layout = QVBoxLayout(self)
+        browser = QTextBrowser()
+        browser.setOpenExternalLinks(True)
+        browser.setPlainText(body)
+        layout.addWidget(browser)
+        buttons = QDialogButtonBox(QDialogButtonBox.Close)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
 
 
 class MentorAIWindow(QMainWindow):
-    """Ventana principal de MentorAI"""
-    
     def __init__(self):
         super().__init__()
-        
-        # Inicializar componentes
+        self.setObjectName("MentorAIWindow")
+        self.setWindowTitle("MentorAI — Profesor local de informática")
+        self.resize(1280, 820)
+        self.setMinimumSize(960, 640)
+
         self.kb_path = APP_ROOT / "knowledge_base"
-        self.engine = AssistantEngine(str(self.kb_path))
-        self.security = SecurityManager("mentorai_windows")
-        self.user_id = "user_001"
-        self.language = "es"
-        
-        # Base de datos
-        self.db_path = Path.home() / ".mentorai" / "mentorai.db"
-        self.db_path.parent.mkdir(exist_ok=True)
-        self.db = DatabaseManager(str(self.db_path))
-        self.db.get_or_create_user(self.user_id)
-        
-        # Gamificación
-        self.gamification = GamificationSystem(self.user_id)
-        
-        # Worker thread
-        self.worker = None
-        
-        self.init_ui()
-        self.load_user_data()
-    
-    def init_ui(self):
-        """Inicializar interfaz de usuario"""
-        self.setWindowTitle("MentorAI - Tu Asistente Educativo Personal")
-        self.setGeometry(100, 100, 1200, 800)
-        self.setStyleSheet(self.get_stylesheet())
-        
-        # Widget central
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        
-        # Layout principal
-        main_layout = QHBoxLayout()
-        
-        # Panel izquierdo (Temas)
-        left_panel = self.create_left_panel()
-        
-        # Panel derecho (Chat)
-        right_panel = self.create_right_panel()
-        
-        # Splitter para redimensionar
-        splitter = QSplitter(Qt.Horizontal)
-        splitter.addWidget(left_panel)
-        splitter.addWidget(right_panel)
-        splitter.setStretchFactor(0, 1)
-        splitter.setStretchFactor(1, 2)
-        
-        main_layout.addWidget(splitter)
-        central_widget.setLayout(main_layout)
-        
-        # Barra de estado
-        self.statusBar = QStatusBar()
-        self.setStatusBar(self.statusBar)
-        self.statusBar.showMessage("Listo")
-    
-    def create_left_panel(self):
-        """Crear panel izquierdo con temas"""
-        panel = QWidget()
-        layout = QVBoxLayout()
-        
-        # Título
-        title = QLabel("📚 Temas Disponibles")
-        title.setFont(QFont("Arial", 12, QFont.Bold))
-        layout.addWidget(title)
-        
-        # Lista de temas
-        self.topics_list = QListWidget()
-        self.topics_list.itemClicked.connect(self.on_topic_selected)
-        
-        topics = [
-            "🐍 Python Básico",
-            "💻 Windows CMD",
-            "⚙️ PowerShell",
-            "🔧 Git y Control de Versiones",
-            "🐳 Docker y Containerización",
-            "🌐 Networking y Redes",
-            "🔒 Seguridad en Redes",
-            "🛡️ Ciberseguridad Avanzada",
-            "📱 Desarrollo Android",
-            "💰 Criptografía y Seguridad",
-            "🔐 Trust Wallet y Wallets",
-            "📊 Binance Basics"
-        ]
-        
-        for topic in topics:
-            self.topics_list.addItem(topic)
-        
-        layout.addWidget(self.topics_list)
-        
-        # Selector de idioma
-        lang_label = QLabel("🌍 Idioma:")
-        lang_label.setFont(QFont("Arial", 10, QFont.Bold))
-        layout.addWidget(lang_label)
-        
+        self.engine = AssistantEngine(self.kb_path)
+        self.screen_orchestrator = ScreenOrchestrator()
+        self.data_dir = self._data_directory()
+        self.store = LocalStore(self.data_dir)
+        self.language = self.store.get_language()
+        self.worker: QThread | None = None
+        self.screen_worker: QThread | None = None
+        self.screen_overlay: ScreenSelectionOverlay | None = None
+        self.last_response: dict[str, Any] | None = None
+        self.last_question = ""
+
+        self._build_ui()
+        self._install_shortcuts()
+        self.professor_hotkey = WindowsProfessorHotkey(self)
+        if QApplication.instance() is not None:
+            QApplication.instance().installNativeEventFilter(self.professor_hotkey)
+        self.professor_hotkey.register()
+        self._populate_topics()
+        self._refresh_progress()
+        self._apply_language()
+
+    @staticmethod
+    def _data_directory() -> Path:
+        if os.name == "nt":
+            base = Path(os.environ.get("LOCALAPPDATA", Path.home()))
+            return base / "MentorAI"
+        return Path.home() / ".mentorai"
+
+    def _build_ui(self) -> None:
+        self.setStyleSheet(self._stylesheet())
+        central = QWidget()
+        central.setObjectName("AppSurface")
+        outer = QVBoxLayout(central)
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.setSpacing(0)
+
+        header = QFrame()
+        header.setObjectName("TopBar")
+        header_layout = QHBoxLayout(header)
+        header_layout.setContentsMargins(28, 20, 28, 20)
+        brand = QLabel("M")
+        brand.setObjectName("BrandMark")
+        brand.setAccessibleName("Logotipo de MentorAI")
+        title_box = QVBoxLayout()
+        title = QLabel("MentorAI")
+        title.setObjectName("BrandTitle")
+        subtitle = QLabel("Un profesor local para entender tu mundo digital")
+        subtitle.setObjectName("BrandSubtitle")
+        title_box.addWidget(title)
+        title_box.addWidget(subtitle)
+        header_layout.addWidget(brand)
+        header_layout.addLayout(title_box)
+        header_layout.addStretch()
+        self.privacy_badge = QLabel("● DATOS LOCALES")
+        self.privacy_badge.setObjectName("PrivacyBadge")
         self.language_combo = QComboBox()
-        self.language_combo.addItems(["Español", "English", "Português", "Català"])
-        self.language_combo.currentIndexChanged.connect(self.on_language_changed)
-        layout.addWidget(self.language_combo)
-        
-        # Botones
-        button_layout = QVBoxLayout()
-        
-        stats_btn = QPushButton("🏆 Mi Progreso")
-        stats_btn.clicked.connect(self.show_stats)
-        button_layout.addWidget(stats_btn)
-        
-        history_btn = QPushButton("📜 Historial")
-        history_btn.clicked.connect(self.show_history)
-        button_layout.addWidget(history_btn)
-        
-        settings_btn = QPushButton("⚙️ Configuración")
-        settings_btn.clicked.connect(self.show_settings)
-        button_layout.addWidget(settings_btn)
-        
-        about_btn = QPushButton("ℹ️ Acerca de")
-        about_btn.clicked.connect(self.show_about)
-        button_layout.addWidget(about_btn)
-        
-        layout.addLayout(button_layout)
-        layout.addStretch()
-        
-        panel.setLayout(layout)
-        return panel
-    
-    def create_right_panel(self):
-        """Crear panel derecho con chat"""
-        panel = QWidget()
-        layout = QVBoxLayout()
-        
-        # Título
-        title = QLabel("💬 Respuesta de MentorAI")
-        title.setFont(QFont("Arial", 12, QFont.Bold))
-        layout.addWidget(title)
-        
-        # Área de respuesta
-        self.response_text = QTextEdit()
-        self.response_text.setReadOnly(True)
-        self.response_text.setStyleSheet("background-color: #f9f9f9; color: #333333;")
-        layout.addWidget(self.response_text)
-        
-        # Input de pregunta
-        input_label = QLabel("Tu Pregunta:")
-        input_label.setFont(QFont("Arial", 10, QFont.Bold))
-        layout.addWidget(input_label)
-        
-        self.input_field = QLineEdit()
-        self.input_field.setPlaceholderText("Escribe tu pregunta aquí...")
-        self.input_field.returnPressed.connect(self.send_query)
-        layout.addWidget(self.input_field)
-        
-        # Botón enviar
-        send_btn = QPushButton("📤 Enviar Pregunta")
-        send_btn.clicked.connect(self.send_query)
-        send_btn.setStyleSheet("background-color: #007AFF; color: white; font-weight: bold; padding: 8px;")
-        layout.addWidget(send_btn)
-        
-        # Barra de progreso
+        self.language_combo.addItem("Español", "es")
+        self.language_combo.addItem("English", "en")
+        self.language_combo.addItem("Português", "pt")
+        self.language_combo.addItem("Català", "ca")
+        self.language_combo.setCurrentIndex(
+            max(0, ["es", "en", "pt", "ca"].index(self.language))
+        )
+        self.language_combo.currentIndexChanged.connect(self._language_changed)
+        header_layout.addWidget(self.privacy_badge)
+        header_layout.addWidget(self.language_combo)
+        outer.addWidget(header)
+
+        splitter = QSplitter(Qt.Horizontal)
+        splitter.setChildrenCollapsible(False)
+        splitter.addWidget(self._build_sidebar())
+        splitter.addWidget(self._build_workspace())
+        splitter.setSizes([300, 900])
+        outer.addWidget(splitter, 1)
+
+        self.status = QStatusBar()
+        self.status.setObjectName("StatusBar")
+        self.status.showMessage("Listo · procesamiento local")
+        self.setStatusBar(self.status)
+        self.setCentralWidget(central)
+
+    def _build_sidebar(self) -> QWidget:
+        sidebar = QFrame()
+        sidebar.setObjectName("SideBar")
+        sidebar.setMinimumWidth(260)
+        layout = QVBoxLayout(sidebar)
+        layout.setContentsMargins(20, 24, 20, 20)
+        layout.setSpacing(12)
+
+        topics_title = QLabel("RUTA DE APRENDIZAJE")
+        topics_title.setObjectName("Eyebrow")
+        layout.addWidget(topics_title)
+        self.topic_search = QLineEdit()
+        self.topic_search.setPlaceholderText("Filtrar temas…")
+        self.topic_search.setClearButtonEnabled(True)
+        self.topic_search.textChanged.connect(self._filter_topics)
+        layout.addWidget(self.topic_search)
+        self.topics_list = QListWidget()
+        self.topics_list.setObjectName("TopicsList")
+        self.topics_list.setAccessibleName("Temas educativos disponibles")
+        self.topics_list.itemClicked.connect(self._topic_selected)
+        layout.addWidget(self.topics_list, 1)
+
+        progress_title = QLabel("TU PROGRESO")
+        progress_title.setObjectName("Eyebrow")
+        layout.addWidget(progress_title)
+        self.progress_label = QLabel("Nivel 1 · 0 XP")
+        self.progress_label.setObjectName("ProgressLabel")
+        layout.addWidget(self.progress_label)
         self.progress_bar = QProgressBar()
-        self.progress_bar.setVisible(False)
+        self.progress_bar.setRange(0, 100)
+        self.progress_bar.setTextVisible(False)
+        self.progress_bar.setAccessibleName("Progreso hasta el siguiente nivel")
         layout.addWidget(self.progress_bar)
-        
-        panel.setLayout(layout)
-        return panel
-    
-    def on_topic_selected(self, item):
-        """Cuando se selecciona un tema"""
-        topic_text = item.text()
-        # Extraer el nombre del tema sin emoji
-        topic_name = topic_text.split()[-1] if topic_text else ""
-        self.input_field.setText(f"Explícame sobre {topic_name}")
+
+        for text, slot in (
+            ("Mi progreso", self.show_stats),
+            ("Historial local", self.show_history),
+            ("Privacidad y datos", self.show_privacy),
+            ("Borrar mis datos", self.delete_local_data),
+        ):
+            button = QPushButton(text)
+            button.setObjectName("QuietButton")
+            button.clicked.connect(slot)
+            layout.addWidget(button)
+        return sidebar
+
+    def _build_workspace(self) -> QWidget:
+        workspace = QWidget()
+        layout = QVBoxLayout(workspace)
+        layout.setContentsMargins(32, 28, 32, 28)
+        layout.setSpacing(18)
+
+        intro = QLabel("¿Qué quieres entender hoy?")
+        intro.setObjectName("WorkspaceTitle")
+        layout.addWidget(intro)
+        hint = QLabel(
+            "Pregunta por pasos concretos. MentorAI explica; tú mantienes el control."
+        )
+        hint.setObjectName("WorkspaceHint")
+        layout.addWidget(hint)
+
+        self.response_text = QTextBrowser()
+        self.response_text.setObjectName("ResponsePanel")
+        self.response_text.setOpenExternalLinks(True)
+        self.response_text.setPlainText(
+            "Escribe una pregunta o elige un tema.\n\n"
+            "MentorAI trabaja con la base educativa instalada en este equipo. "
+            "No ejecuta comandos ni envía tu consulta a un servidor."
+        )
+        layout.addWidget(self.response_text, 1)
+
+        self.complete_button = QPushButton("Marcar tema como entendido (+50 puntos)")
+        self.complete_button.setObjectName("SecondaryButton")
+        self.complete_button.setVisible(False)
+        self.complete_button.clicked.connect(self._complete_topic)
+        layout.addWidget(self.complete_button)
+
+        question_row = QHBoxLayout()
+        self.input_field = QLineEdit()
+        self.input_field.setObjectName("QuestionInput")
+        self.input_field.setPlaceholderText("Ejemplo: ¿qué hace cd en CMD?")
+        self.input_field.setClearButtonEnabled(True)
+        self.input_field.returnPressed.connect(self.send_query)
+        self.input_field.setAccessibleName("Pregunta para MentorAI")
+        self.send_button = QPushButton("Preguntar")
+        self.send_button.setObjectName("PrimaryButton")
+        self.send_button.setMinimumWidth(130)
+        self.send_button.clicked.connect(self.send_query)
+        question_row.addWidget(self.input_field, 1)
+        question_row.addWidget(self.send_button)
+        layout.addLayout(question_row)
+
+        professor = QGroupBox("Professor Mode · lectura bajo tu orden")
+        professor.setObjectName("ProfessorBox")
+        professor_layout = QHBoxLayout(professor)
+        professor_hint = QLabel(
+            "Atajo Ctrl+Shift+M: congela una imagen temporal y seleccionas el texto. "
+            "Esc cancela. No se guarda ni se envía."
+        )
+        professor_hint.setWordWrap(True)
+        professor_hint.setObjectName("ProfessorHint")
+        self.focused_button = QPushButton("Leer control enfocado")
+        self.focused_button.setObjectName("SecondaryButton")
+        self.focused_button.setToolTip(
+            "Lee solo el control accesible que tenga el foco"
+        )
+        self.focused_button.clicked.connect(self.read_focused_control)
+        self.area_button = QPushButton("Seleccionar área OCR")
+        self.area_button.setObjectName("SecondaryButton")
+        self.area_button.setToolTip(
+            "Activa una selección manual de pantalla para OCR local opcional"
+        )
+        self.area_button.clicked.connect(self.arm_professor_mode)
+        professor_layout.addWidget(professor_hint, 1)
+        professor_layout.addWidget(self.focused_button)
+        professor_layout.addWidget(self.area_button)
+        layout.addWidget(professor)
+
+        return workspace
+
+    def _install_shortcuts(self) -> None:
+        self.ask_shortcut = QShortcut(QKeySequence("Ctrl+Return"), self)
+        self.ask_shortcut.activated.connect(self.send_query)
+        self.professor_shortcut = QShortcut(QKeySequence("Ctrl+Shift+M"), self)
+        self.professor_shortcut.activated.connect(self.arm_professor_mode)
+
+    def _populate_topics(self, query: str = "") -> None:
+        self.topics_list.clear()
+        for topic in self.engine.search_topics(query):
+            item = QListWidgetItem(f"{topic['label']}\n{topic['category']}")
+            item.setData(Qt.UserRole, topic["key"])
+            item.setToolTip(f"Preguntar sobre {topic['label']}")
+            self.topics_list.addItem(item)
+
+    def _filter_topics(self, query: str) -> None:
+        self._populate_topics(query.strip())
+
+    def _topic_selected(self, item: QListWidgetItem) -> None:
+        key = str(item.data(Qt.UserRole))
+        self.input_field.setText(f"Explícame {key}")
         self.input_field.setFocus()
-    
-    def on_language_changed(self, index):
-        """Cambiar idioma"""
-        languages = ["es", "en", "pt", "ca"]
-        self.language = languages[index]
-        self.statusBar.showMessage(f"Idioma cambiado a {self.language_combo.currentText()}")
-    
-    def send_query(self):
-        """Enviar pregunta"""
+
+    def _language_changed(self, index: int) -> None:
+        language = str(self.language_combo.itemData(index))
+        self.language = language
+        self.store.set_language(language)
+        self._apply_language()
+        self.status.showMessage(f"Idioma de interfaz: {LANGUAGE_NAMES[language]}")
+
+    def _apply_language(self) -> None:
+        placeholders = {
+            "es": "Ejemplo: ¿qué hace cd en CMD?",
+            "en": "Example: what does cd do in CMD?",
+            "pt": "Exemplo: o que faz cd no CMD?",
+            "ca": "Exemple: què fa cd al CMD?",
+        }
+        self.input_field.setPlaceholderText(
+            placeholders.get(self.language, placeholders["es"])
+        )
+
+    def send_query(self) -> None:
         query = self.input_field.text().strip()
-        
-        if not query:
-            QMessageBox.warning(self, "Advertencia", "Por favor, escribe una pregunta")
+        if not query or self.worker is not None and self.worker.isRunning():
             return
-        
+        self.last_question = query
         self.input_field.clear()
-        self.response_text.setText("⏳ Procesando tu pregunta...")
-        self.progress_bar.setVisible(True)
-        self.statusBar.showMessage("Procesando...")
-        
-        # Crear worker thread
+        self.send_button.setEnabled(False)
+        self.response_text.setPlainText("Procesando localmente…")
+        self.complete_button.setVisible(False)
+        self.status.showMessage("Consultando la base de conocimiento local…")
         self.worker = QueryWorker(self.engine, query, self.language)
-        self.worker.finished.connect(self.on_query_finished)
-        self.worker.error.connect(self.on_query_error)
+        self.worker.finished.connect(self._query_finished)
+        self.worker.failed.connect(self._query_failed)
+        self.worker.finished.connect(self._release_query_worker)
+        self.worker.failed.connect(self._release_query_worker)
         self.worker.start()
-    
-    def on_query_finished(self, response):
-        """Cuando termina de procesar la query"""
-        self.progress_bar.setVisible(False)
-        
-        # Actualizar gamificación
-        self.db.update_progress(self.user_id, points=10, experience=10)
-        
-        # Formatear respuesta
-        formatted = self.format_response(response)
-        self.response_text.setText(formatted)
-        
-        # Guardar en historial
-        topic = response.get('matched_term', 'General')
-        self.db.save_query(self.user_id, 
-                          response.get('original_query', ''),
-                          response.get('explanation', ''),
-                          topic)
-        
-        self.statusBar.showMessage("Listo")
-    
-    def on_query_error(self, error):
-        """Cuando hay error en la query"""
-        self.progress_bar.setVisible(False)
-        self.response_text.setText(f"❌ Error: {error}\n\nPor favor, intenta de nuevo.")
-        self.statusBar.showMessage("Error")
-    
-    def format_response(self, response):
-        """Formatear respuesta para mostrar"""
-        text = f"✅ RESPUESTA:\n{response.get('explanation', 'Sin respuesta')}\n\n"
-        
-        if response.get('steps'):
-            text += "📋 PASOS:\n"
-            for i, step in enumerate(response['steps'], 1):
-                text += f"{i}. {step}\n"
-            text += "\n"
-        
-        if response.get('security_tips'):
-            text += "🔒 CONSEJOS DE SEGURIDAD:\n"
-            for tip in response['security_tips']:
-                text += f"• {tip}\n"
-        
-        return text
-    
-    def show_stats(self):
-        """Mostrar estadísticas"""
-        progress = self.db.get_progress(self.user_id)
-        
-        stats_text = f"""
-🏆 TU PROGRESO EN MENTORAI
 
-Puntos totales: {progress[2] if progress else 0}
-Nivel actual: {progress[3] if progress else 1}
-Experiencia: {progress[4] if progress else 0}/1000 XP
-Racha de aprendizaje: {progress[5] if progress else 0} días
-Temas completados: {progress[6] if progress else 0}
+    def _release_query_worker(self, *_args) -> None:
+        self.send_button.setEnabled(True)
+        if self.worker is not None:
+            self.worker.deleteLater()
+            self.worker = None
 
-¡Sigue aprendiendo para desbloquear más logros!
-        """
-        
-        QMessageBox.information(self, "Mi Progreso", stats_text)
-    
-    def show_history(self):
-        """Mostrar historial"""
-        history = self.db.get_history(self.user_id, limit=5)
-        
-        history_text = "📜 ÚLTIMAS PREGUNTAS:\n\n"
-        for question, topic, timestamp in history:
-            history_text += f"• {question}\n  Tema: {topic}\n  {timestamp}\n\n"
-        
-        QMessageBox.information(self, "Historial", history_text if history else "Sin historial aún")
-    
-    def show_settings(self):
-        """Mostrar configuración"""
-        settings_text = """
-⚙️ CONFIGURACIÓN
+    def _query_finished(self, response: dict) -> None:
+        self.last_response = response
+        if response.get("status") != "success":
+            self.response_text.setPlainText(
+                str(response.get("message", "No se pudo procesar la consulta."))
+            )
+            self.status.showMessage("Consulta no procesada")
+            return
+        body = self._format_response(response)
+        self.response_text.setPlainText(body)
+        self.store.record_query(
+            response.get("original_query", ""), body, response.get("topic", "General")
+        )
+        self._refresh_progress()
+        self.complete_button.setVisible(bool(response.get("matched_term")))
+        self.status.showMessage(
+            "Respuesta local lista · nada se ha ejecutado automáticamente"
+        )
 
-Privacidad:
-✅ Todos los datos se procesan localmente
-✅ Sin conexión a internet requerida
-✅ Cifrado AES-256
+    def _query_failed(self, message: str) -> None:
+        self.response_text.setPlainText(
+            f"No se pudo completar la consulta local.\n\nDetalle: {message}"
+        )
+        self.status.showMessage("Error controlado")
 
-Almacenamiento:
-📁 Ubicación: ~/.mentorai/
-📊 Base de datos: SQLite local
+    @staticmethod
+    def _format_response(response: dict) -> str:
+        lines = [
+            "RESPUESTA",
+            "",
+            str(response.get("explanation", "Sin explicación disponible.")),
+            "",
+        ]
+        steps = response.get("steps") or []
+        if steps:
+            lines.extend(["PASOS", ""])
+            lines.extend(f"{index}. {step}" for index, step in enumerate(steps, 1))
+            lines.append("")
+        tips = response.get("security_tips") or []
+        if tips:
+            lines.extend(["SEGURIDAD", ""])
+            lines.extend(f"• {tip}" for tip in tips)
+            lines.append("")
+        lines.extend(["—", str(response.get("safety_notice", "Procesamiento local."))])
+        return "\n".join(lines)
 
-Versión:
-v1.0.0 - 2026
-        """
-        
-        QMessageBox.information(self, "Configuración", settings_text)
-    
-    def show_about(self):
-        """Mostrar información acerca de"""
-        about_text = """
-🎓 MentorAI v1.0.0
-Tu Asistente Educativo Personal
+    def _complete_topic(self) -> None:
+        if not self.last_response:
+            return
+        topic = str(
+            self.last_response.get("matched_term")
+            or self.last_response.get("topic")
+            or "General"
+        )
+        self.store.complete_topic(topic)
+        self.complete_button.setVisible(False)
+        self._refresh_progress()
+        self.status.showMessage(f"Tema marcado como entendido: {topic}")
 
-Características:
-• 35+ temas educativos
-• 100% privado y seguro
-• Gamificación completa
-• Multiidioma
-• Código abierto (MIT)
+    def _refresh_progress(self) -> None:
+        progress = self.store.get_progress()
+        current_start = sum(100 * i for i in range(1, progress.level))
+        next_start = sum(100 * i for i in range(1, progress.level + 1))
+        span = max(1, next_start - current_start)
+        percent = max(
+            0, min(100, round((progress.points - current_start) / span * 100))
+        )
+        self.progress_label.setText(
+            f"Nivel {progress.level} · {progress.points} puntos · {progress.topics_completed} temas"
+        )
+        self.progress_bar.setValue(percent)
+        self.progress_bar.setFormat(f"{percent}%")
 
-Seguridad:
-• Cifrado AES-256
-• Procesamiento local
-• RGPD compliant
+    def read_focused_control(self) -> None:
+        if self.screen_worker is not None and self.screen_worker.isRunning():
+            return
+        self.status.showMessage("Leyendo únicamente el control accesible enfocado…")
+        self.focused_button.setEnabled(False)
+        self.screen_worker = ScreenReadWorker(self.screen_orchestrator, "focused")
+        self.screen_worker.finished.connect(self._screen_text_ready)
+        self.screen_worker.failed.connect(self._screen_read_failed)
+        self.screen_worker.finished.connect(self._release_screen_worker)
+        self.screen_worker.failed.connect(self._release_screen_worker)
+        self.screen_worker.start()
 
-© 2026 MentorAI Project
-GitHub: github.com/mentorai/mentorai
-        """
-        
-        QMessageBox.information(self, "Acerca de MentorAI", about_text)
-    
-    def load_user_data(self):
-        """Cargar datos del usuario"""
-        self.db.get_progress(self.user_id)
-    
-    def get_stylesheet(self):
-        """Retornar stylesheet personalizado"""
+    def arm_professor_mode(self) -> None:
+        if self.screen_overlay is not None:
+            return
+        screen = QApplication.primaryScreen()
+        if screen is None:
+            self._screen_read_failed("No se detectó una pantalla disponible.")
+            return
+        pixmap = screen.grabWindow(0)
+        self.screen_overlay = ScreenSelectionOverlay(pixmap, screen.geometry())
+        self.screen_overlay.selected.connect(self._area_selected)
+        self.screen_overlay.destroyed.connect(self._overlay_closed)
+        self.screen_overlay.show()
+        self.screen_overlay.raise_()
+        self.screen_overlay.activateWindow()
+        self.status.showMessage(
+            "Professor Mode activo · selecciona manualmente un área o pulsa Esc"
+        )
+
+    def _area_selected(self, pixmap: QPixmap) -> None:
+        image = pixmap.toImage().convertToFormat(QImage.Format_RGBA8888)
+        self.status.showMessage("Área seleccionada · OCR local opcional en curso…")
+        self.area_button.setEnabled(False)
+        self.screen_worker = ScreenReadWorker(self.screen_orchestrator, "ocr", image)
+        self.screen_worker.finished.connect(self._screen_text_ready)
+        self.screen_worker.failed.connect(self._screen_read_failed)
+        self.screen_worker.finished.connect(self._release_screen_worker)
+        self.screen_worker.failed.connect(self._release_screen_worker)
+        self.screen_worker.start()
+
+    def _overlay_closed(self) -> None:
+        self.screen_overlay = None
+
+    def _release_screen_worker(self, *_args) -> None:
+        self.focused_button.setEnabled(True)
+        self.area_button.setEnabled(True)
+        if self.screen_worker is not None:
+            self.screen_worker.deleteLater()
+            self.screen_worker = None
+
+    def _screen_text_ready(self, text: str) -> None:
+        if not text.strip():
+            self.status.showMessage("No se encontró texto accesible.")
+            return
+        self.input_field.setText(text)
+        self.input_field.setFocus()
+        self.status.showMessage(
+            "Texto leído localmente · revisa y pulsa Preguntar para analizarlo"
+        )
+
+    def _screen_read_failed(self, message: str) -> None:
+        QMessageBox.warning(self, "Professor Mode", message)
+        self.status.showMessage("Lectura cancelada o no disponible")
+
+    def show_stats(self) -> None:
+        progress = self.store.get_progress()
+        body = (
+            f"Nivel: {progress.level}\n"
+            f"Puntos: {progress.points}\n"
+            f"Experiencia: {progress.experience}\n"
+            f"Temas completados: {progress.topics_completed}\n\n"
+            "El progreso se guarda en la base local del dispositivo."
+        )
+        InfoDialog("Mi progreso", body, self).exec_()
+
+    def show_history(self) -> None:
+        history = self.store.get_history(30)
+        if not history:
+            body = "Todavía no hay consultas guardadas en este dispositivo."
+        else:
+            chunks = []
+            for item in history:
+                chunks.append(
+                    f"[{item.created_at}] {item.topic}\nPregunta: {item.question}\n{item.answer}"
+                )
+            body = "\n\n".join(chunks)
+        InfoDialog("Historial local descifrado", body, self).exec_()
+
+    def show_privacy(self) -> None:
+        report = self.store.export_privacy_summary()
+        body = (
+            "PRIVACIDAD POR DISEÑO\n\n"
+            "MentorAI procesa las consultas desde la base instalada. Professor Mode solo se activa por orden explícita; no existe monitorización continua.\n\n"
+            f"Ubicación local: {report['database']}\n"
+            f"Registros locales: {report['history_records']}\n\n"
+            f"Cifrado: {report['security']['encryption']}\n"
+            f"Clave: {report['security']['key_protection']}\n\n"
+            "No confundas estas garantías técnicas con una certificación jurídica: el lanzamiento comercial requiere revisión de cumplimiento, política de privacidad y pruebas en los dispositivos objetivo."
+        )
+        InfoDialog("Privacidad y datos", body, self).exec_()
+
+    def delete_local_data(self) -> None:
+        answer = QMessageBox.question(
+            self,
+            "Borrar datos locales",
+            "Se eliminarán historial, progreso y la clave local de MentorAI. Esta acción no se puede deshacer. ¿Continuar?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        if answer != QMessageBox.Yes:
+            return
+        try:
+            self.store.delete_all()
+            self.store.reset_profile()
+            self._refresh_progress()
+            self.response_text.setPlainText(
+                "Tus datos locales se han eliminado. MentorAI está listo para empezar de nuevo."
+            )
+            self.status.showMessage("Datos locales eliminados")
+        except Exception as exc:
+            QMessageBox.critical(
+                self, "No se pudo borrar", f"La operación no terminó: {exc}"
+            )
+
+    def closeEvent(self, event):
+        if self.worker is not None and self.worker.isRunning():
+            self.worker.quit()
+            self.worker.wait(1500)
+        if self.screen_worker is not None and self.screen_worker.isRunning():
+            self.screen_worker.quit()
+            self.screen_worker.wait(1500)
+        self.professor_hotkey.unregister()
+        if QApplication.instance() is not None:
+            QApplication.instance().removeNativeEventFilter(self.professor_hotkey)
+        event.accept()
+
+    @staticmethod
+    def _stylesheet() -> str:
         return """
-        QMainWindow {
-            background-color: #f0f0f0;
-        }
-        QLabel {
-            color: #333333;
-        }
-        QPushButton {
-            background-color: #007AFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 8px;
-            font-weight: bold;
-        }
-        QPushButton:hover {
-            background-color: #0051D5;
-        }
-        QPushButton:pressed {
-            background-color: #003DA8;
-        }
-        QLineEdit {
-            border: 1px solid #cccccc;
-            border-radius: 5px;
-            padding: 8px;
-            background-color: white;
-        }
-        QTextEdit {
-            border: 1px solid #cccccc;
-            border-radius: 5px;
-            background-color: white;
-        }
-        QListWidget {
-            border: 1px solid #cccccc;
-            border-radius: 5px;
-            background-color: white;
-        }
-        QComboBox {
-            border: 1px solid #cccccc;
-            border-radius: 5px;
-            padding: 5px;
-            background-color: white;
-        }
-        QStatusBar {
-            background-color: #e0e0e0;
-        }
+        * { font-family: 'Segoe UI'; }
+        QMainWindow, #AppSurface { background: #f4f1ea; color: #1d2b2a; }
+        #TopBar { background: #173b3a; }
+        #BrandMark { background: #e2a84b; color: #173b3a; border-radius: 21px; min-width: 42px; max-width: 42px; min-height: 42px; max-height: 42px; font-size: 25px; font-weight: 800; qproperty-alignment: AlignCenter; }
+        #BrandTitle { color: #fffaf0; font-size: 23px; font-weight: 700; }
+        #BrandSubtitle { color: #bed0c8; font-size: 12px; }
+        #PrivacyBadge { color: #c9e2c5; font-size: 11px; font-weight: 700; padding: 8px 12px; border: 1px solid #528a70; border-radius: 6px; }
+        #SideBar { background: #e8e4da; border-right: 1px solid #d4cec2; }
+        #Eyebrow { color: #56716b; letter-spacing: 1px; font-size: 11px; font-weight: 800; }
+        QLineEdit, QComboBox { background: #fffdf8; color: #1d2b2a; border: 1px solid #c8c0b2; border-radius: 5px; padding: 9px 11px; }
+        QLineEdit:focus, QComboBox:focus { border: 2px solid #2c7465; padding: 8px 10px; }
+        #TopicsList { background: transparent; border: none; outline: none; }
+        #TopicsList::item { color: #294540; padding: 10px 8px; border-radius: 5px; margin: 2px 0; }
+        #TopicsList::item:hover { background: #d8e1d8; }
+        #TopicsList::item:selected { color: #173b3a; background: #c1d4c8; font-weight: 700; }
+        #ProgressLabel { color: #294540; font-size: 12px; }
+        QProgressBar { background: #d2cec4; border: none; border-radius: 4px; height: 8px; }
+        QProgressBar::chunk { background: #2c7465; border-radius: 4px; }
+        QPushButton { border-radius: 5px; padding: 10px 14px; font-weight: 700; }
+        #QuietButton { background: transparent; color: #31524b; text-align: left; border: 1px solid transparent; }
+        #QuietButton:hover { background: #d8e1d8; border-color: #b7cbbd; }
+        #WorkspaceTitle { color: #173b3a; font-size: 29px; font-weight: 700; }
+        #WorkspaceHint, #ProfessorHint { color: #60736c; font-size: 13px; }
+        #ResponsePanel { background: #fffdf8; color: #243b37; border: 1px solid #d4cec2; border-radius: 7px; padding: 18px; font-size: 14px; line-height: 1.45; }
+        #QuestionInput { font-size: 15px; padding: 13px; }
+        #PrimaryButton { background: #2c7465; color: #ffffff; border: 1px solid #225c50; }
+        #PrimaryButton:hover { background: #235f53; }
+        #PrimaryButton:disabled { background: #98aaa2; }
+        #SecondaryButton { background: #dce8df; color: #234e45; border: 1px solid #b8cdbd; }
+        #SecondaryButton:hover { background: #c9ddd0; }
+        #ProfessorBox { background: #eaf0e9; border: 1px solid #c0d1c0; border-radius: 7px; color: #234e45; padding: 8px; }
+        #StatusBar { background: #e8e4da; color: #56716b; }
         """
 
 
-def main():
-    """Función principal"""
+def main() -> int:
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
     app = QApplication(sys.argv)
+    app.setApplicationName("MentorAI")
+    app.setOrganizationName("MentorAI")
     window = MentorAIWindow()
     window.show()
-    sys.exit(app.exec_())
+    return app.exec_()
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
