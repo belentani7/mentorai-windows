@@ -5,7 +5,7 @@
 - [x] Crear configuración de PyInstaller para Windows x64.
 - [x] Crear workflow de GitHub Actions con runner `windows-latest`.
 - [x] Marcar el binario ELF anterior como inválido y evitar reutilizarlo en el nuevo instalador.
-- [ ] Construir el ejecutable PE x64 en un entorno Windows real.
+- [x] Construir el ejecutable PE x64 en un runner Windows real mediante GitHub Actions.
 - [ ] Verificar que el ejecutable arranca en Windows 11 limpio.
 - [x] Crear script NSIS nuevo con payload `dist\\MentorAI.exe`; falta ejecutarlo en Windows.
 - [ ] Firmar el ejecutable/instalador o documentar explícitamente que aún no está firmado.
@@ -29,6 +29,7 @@ No afirmar que existe un ejecutable Windows funcional hasta confirmar que el arc
 - [x] Sustituir las afirmaciones de cifrado simulado por almacenamiento local autenticado real o documentar claramente cualquier limitación.
 - [x] Implementar Professor Mode con activación explícita y captura local segura; no enviar capturas ni texto fuera del dispositivo.
 - [x] Añadir pruebas de arranque, consulta, persistencia, borrado y manejo de datos sensibles.
-- [ ] Preparar una compilación Windows nativa reproducible y validarla después en una máquina Windows 11 real vinculada.
+- [x] Preparar una compilación Windows nativa reproducible y verificar que el artefacto es PE32+ x64.
+- [ ] Abrir y validar el instalador y la aplicación en una máquina Windows 11 real vinculada.
 - [ ] No declarar el producto como 10/10, listo para vender o conforme legalmente sin pruebas y revisión profesional correspondientes.
 
