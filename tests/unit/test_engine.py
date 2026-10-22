@@ -26,5 +26,23 @@ def test_engine():
     result = engine.process_query(sensitive_text)
     print(f"Filtered query: {result['original_query']}")
 
+def test_unsupported_language_uses_spanish_explanation():
+    engine = AssistantEngine(ROOT / "knowledge_base")
+    result = engine.process_query("zzzz_question_without_knowledge_topic_12345", language="de")
+    assert result["status"] == "success"
+    assert result["language"] == "es"
+    assert result["matched_term"] is None
+    assert result["explanation"].startswith("Todavía no tengo una explicación")
+
+
+def test_offline_questions_do_not_echo_secret_identifiers():
+    engine = AssistantEngine(ROOT / "knowledge_base")
+    result = engine.process_query("Mi correo test@example.com; ¿cómo uso git?", language="es")
+    assert "test@example.com" not in result["original_query"]
+    assert "[CONFIDENCIAL]" in result["original_query"]
+
+
 if __name__ == "__main__":
     test_engine()
+    test_unsupported_language_uses_spanish_explanation()
+    test_offline_questions_do_not_echo_secret_identifiers()
