@@ -84,32 +84,17 @@ class UpdateManager:
             return 0
     
     def download_update(self, download_url, checksum=None):
-        """Descargar actualización"""
-        try:
-            temp_dir = tempfile.mkdtemp()
-            temp_file = Path(temp_dir) / "mentorai_update.tar.gz"
-            
-            self.log_update(f"Descargando actualización desde {download_url}")
-            
-            # Simular descarga (en producción, usar urllib)
-            # response = urlopen(download_url)
-            # with open(temp_file, 'wb') as f:
-            #     f.write(response.read())
-            
-            # Verificar checksum si se proporciona
-            if checksum:
-                file_checksum = self.calculate_checksum(temp_file)
-                if file_checksum != checksum:
-                    self.log_update("Error: Checksum no coincide")
-                    return False
-            
-            self.log_update("Descarga completada")
-            return str(temp_file)
-        
-        except Exception as e:
-            self.log_update(f"Error al descargar: {e}")
-            return False
-    
+        """Fail closed until a signed, authenticated updater is implemented.
+
+        A prior placeholder returned a path to a non-existent archive and
+        incorrectly reported download success. No files are downloaded.
+        """
+        self.log_update(
+            "Actualización automática no disponible: descarga autenticada y "
+            "validación criptográfica pendientes. Utiliza el instalador oficial."
+        )
+        return False
+
     def calculate_checksum(self, file_path):
         """Calcular checksum SHA256 de un archivo"""
         sha256_hash = hashlib.sha256()
@@ -119,29 +104,17 @@ class UpdateManager:
         return sha256_hash.hexdigest()
     
     def install_update(self, update_file):
-        """Instalar actualización"""
-        try:
-            self.log_update(f"Instalando actualización desde {update_file}")
-            
-            # Crear backup de versión actual
-            backup_dir = Path.home() / ".mentorai" / f"backup_{self.app_version}"
-            if backup_dir.exists():
-                shutil.rmtree(backup_dir)
-            
-            shutil.copytree(self.app_dir, backup_dir)
-            self.log_update(f"Backup creado en {backup_dir}")
-            
-            # Extraer y instalar actualización
-            # En producción: tar.extractall()
-            
-            self.log_update("Actualización instalada correctamente")
-            return True
-        
-        except Exception as e:
-            self.log_update(f"Error al instalar: {e}")
-            self.rollback_update()
-            return False
-    
+        """Never report an installation that was not actually performed.
+
+        Installation requires package signature verification and a controlled,
+        recoverable updater outside the running application's directory.
+        """
+        self.log_update(
+            "Instalación automática bloqueada: la función de instalación "
+            "segura no está implementada."
+        )
+        return False
+
     def rollback_update(self):
         """Revertir a versión anterior si hay error"""
         try:
