@@ -33,6 +33,8 @@ jobs:
           python tools/validate_repository.py
       - name: Run offline smoke test
         run: python tests/smoke_runtime.py
+      - name: Verify knowledge-base language fallback and redaction
+        run: python tests/unit/test_engine.py
       - name: Run headless UI smoke test
         env:
           QT_QPA_PLATFORM: offscreen
