@@ -20,6 +20,15 @@ def main() -> int:
     answer = engine.process_query("¿Qué es powershel?")
     assert answer["status"] == "success"
     assert answer["matched_term"] == "powershell"
+    # Learning paths contain only available, locally documented topics.
+    paths = engine.get_learning_paths()
+    assert {path["id"] for path in paths} == {"windows", "python", "git", "security"}
+    assert all(
+        topic["key"] in engine.knowledge_base
+        for path in paths
+        for topic in path["topics"]
+    )
+    assert all(path["topics"] for path in paths)
     # «git» appears inside «digital», but is not a separate topic token.
     digital = engine.process_query("Quiero aprender sobre mi vida digital")
     assert digital["matched_term"] != "git"
