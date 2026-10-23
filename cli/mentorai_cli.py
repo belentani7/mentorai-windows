@@ -114,7 +114,9 @@ class MentorAIApp:
             print(f"\n{chosen['title']}")
             for index, topic in enumerate(chosen["topics"], 1):
                 print(f"{index}. {topic['label']} — {topic['category']}")
-            print("\nEscribe el nombre de cualquiera de estos temas en 'Hacer una pregunta'.")
+            print(
+                "\nEscribe el nombre de cualquiera de estos temas en 'Hacer una pregunta'."
+            )
         input("\nPulsa Enter para continuar…")
 
     def show_progress(self) -> None:
