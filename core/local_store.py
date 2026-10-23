@@ -210,10 +210,16 @@ class LocalStore:
         return history
 
     def export_privacy_summary(self) -> dict[str, Any]:
+        """Cuenta todos los registros, no solo los últimos 100 que muestra la UI."""
         progress = self.get_progress()
+        with self._connect() as connection:
+            row = connection.execute(
+                "SELECT COUNT(*) AS total FROM history WHERE user_id = ?",
+                (self.USER_ID,),
+            ).fetchone()
         return {
             "database": str(self.db_path),
-            "history_records": len(self.get_history(100)),
+            "history_records": int(row["total"]) if row else 0,
             "progress": progress.__dict__,
             "security": self.security.generate_privacy_report(),
         }
