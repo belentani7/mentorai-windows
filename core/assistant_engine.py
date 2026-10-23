@@ -32,11 +32,25 @@ class AssistantEngine:
         },
         "git": {
             "title": "Git y colaboración",
-            "topics": ("git", "git clone", "git branch", "git pull", "git merge", "git push"),
+            "topics": (
+                "git",
+                "git clone",
+                "git branch",
+                "git pull",
+                "git merge",
+                "git push",
+            ),
         },
         "security": {
             "title": "Seguridad digital práctica",
-            "topics": ("phishing", "password_security", "two_factor_authentication", "malware", "firewall", "vpn"),
+            "topics": (
+                "phishing",
+                "password_security",
+                "two_factor_authentication",
+                "malware",
+                "firewall",
+                "vpn",
+            ),
         },
     }
 
@@ -167,7 +181,9 @@ class AssistantEngine:
                     {
                         "key": topic,
                         "label": topic.replace("_", " ").title(),
-                        "category": str(self.knowledge_base[topic].get("category", "General")),
+                        "category": str(
+                            self.knowledge_base[topic].get("category", "General")
+                        ),
                     }
                     for topic in definition["topics"]
                     if topic in self.knowledge_base
