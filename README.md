@@ -26,11 +26,13 @@ python -m pip install -r requirements-windows.txt
 python ui\mentorai_windows_ui.py
 ```
 
-La CLI de respaldo comparte el mismo motor y almacén local:
+La CLI de respaldo comparte el mismo motor y almacén local. Incluye **rutas guiadas offline** (Windows, Python, Git y seguridad) que solo utilizan temas existentes en la base de conocimiento instalada:
 
 ```powershell
 python cli\mentorai_cli.py
 ```
+
+En el menú, elige **8. Rutas de aprendizaje** y selecciona una ruta. Cada paso muestra un tema consultable en MentorAI; no ejecuta comandos ni necesita conexión de red.
 
 La aplicación crea sus datos de usuario en `%LOCALAPPDATA%\MentorAI` en Windows. El directorio contiene SQLite local, la clave protegida y los archivos auxiliares de SQLite. No se debe copiar la clave a otro equipo.
 
