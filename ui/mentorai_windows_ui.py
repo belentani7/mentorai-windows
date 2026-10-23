@@ -442,6 +442,7 @@ class MentorAIWindow(QMainWindow):
         if not query or self.worker is not None:
             return
         self.last_question = query
+        self.last_response = None
         self.input_field.clear()
         self.input_field.setEnabled(False)
         self.send_button.setEnabled(False)
@@ -458,6 +459,8 @@ class MentorAIWindow(QMainWindow):
     def _release_query_worker(self, *_args) -> None:
         self.input_field.setEnabled(True)
         self.send_button.setEnabled(True)
+        if self.last_response is None or self.last_response.get("status") != "success":
+            self.input_field.setFocus(Qt.OtherFocusReason)
         if self.worker is not None:
             self.worker.deleteLater()
             self.worker = None
@@ -468,6 +471,8 @@ class MentorAIWindow(QMainWindow):
             self.response_text.setPlainText(
                 str(response.get("message", "No se pudo procesar la consulta."))
             )
+            if not self.input_field.text():
+                self.input_field.setText(self.last_question)
             self.status.showMessage("Consulta no procesada")
             return
         body = self._format_response(response)
@@ -486,7 +491,6 @@ class MentorAIWindow(QMainWindow):
         self.last_response = None
         if not self.input_field.text():
             self.input_field.setText(self.last_question)
-        self.input_field.setFocus(Qt.OtherFocusReason)
         self.response_text.setPlainText(
             f"No se pudo completar la consulta local.\n\nDetalle: {message}"
         )
