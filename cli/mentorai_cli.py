@@ -44,7 +44,8 @@ class MentorAIApp:
         print("5. Ver privacidad")
         print("6. Cambiar idioma")
         print("7. Borrar datos locales")
-        print("8. Salir\n")
+        print("8. Rutas de aprendizaje")
+        print("9. Salir\n")
         return input("Selecciona una opción: ").strip()
 
     def ask_question(self) -> None:
@@ -95,6 +96,25 @@ class MentorAIApp:
         self.print_header()
         for topic in self.engine.search_topics():
             print(f"- {topic['label']} ({topic['category']})")
+        input("\nPulsa Enter para continuar…")
+
+    def show_learning_paths(self) -> None:
+        """Ofrece un itinerario comprobable sin ejecutar instrucciones del PC."""
+        paths = [path for path in self.engine.get_learning_paths() if path["topics"]]
+        if not paths:
+            print("\nNo hay rutas disponibles con el currículo instalado.")
+            input("\nPulsa Enter para continuar…")
+            return
+        print("\nRUTAS DE APRENDIZAJE")
+        for index, path in enumerate(paths, 1):
+            print(f"{index}. {path['title']} ({len(path['topics'])} temas)")
+        value = input("\nSelecciona una ruta (Enter para volver): ").strip()
+        if value.isdecimal() and 1 <= int(value) <= len(paths):
+            chosen = paths[int(value) - 1]
+            print(f"\n{chosen['title']}")
+            for index, topic in enumerate(chosen["topics"], 1):
+                print(f"{index}. {topic['label']} — {topic['category']}")
+            print("\nEscribe el nombre de cualquiera de estos temas en 'Hacer una pregunta'.")
         input("\nPulsa Enter para continuar…")
 
     def show_progress(self) -> None:
@@ -154,10 +174,11 @@ class MentorAIApp:
             "5": self.show_privacy,
             "6": self.change_language,
             "7": self.clear_local_data,
+            "8": self.show_learning_paths,
         }
         while self.running:
             choice = self.show_main_menu()
-            if choice == "8":
+            if choice == "9":
                 self.running = False
             elif choice in actions:
                 actions[choice]()
