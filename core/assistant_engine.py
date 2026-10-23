@@ -87,7 +87,7 @@ class AssistantEngine:
         exact = [
             (key, len(normalised))
             for key, normalised in self._normalised_keys.items()
-            if normalised in query_normalised
+            if re.search(r"(?<!\w)" + re.escape(normalised) + r"(?!\w)", query_normalised)
         ]
         if exact:
             return max(exact, key=lambda item: item[1])[0]
@@ -156,12 +156,13 @@ class AssistantEngine:
 
         clean_text = self._filter_sensitive_data(extracted_text.strip())
         matched_key = self._find_best_match(clean_text)
-        fallback = {
+        fallback_messages = {
             "es": "Todavía no tengo una explicación específica para esa consulta. Prueba con un tema de la lista o con términos como CMD, PowerShell, Python, Git, Docker, Android o seguridad.",
             "en": "I do not have a specific explanation for that query yet. Try a topic from the list or terms such as CMD, PowerShell, Python, Git, Docker, Android, or security.",
             "pt": "Ainda não tenho uma explicação específica para essa pergunta. Tente um tema da lista ou termos como CMD, PowerShell, Python, Git, Docker, Android ou segurança.",
             "ca": "Encara no tinc una explicació específica per a aquesta consulta. Prova un tema de la llista o termes com CMD, PowerShell, Python, Git, Docker, Android o seguretat.",
-        }.get(language, "es")
+        }
+        fallback = fallback_messages.get(language, fallback_messages["es"])
 
         response: dict[str, Any] = {
             "status": "success",
