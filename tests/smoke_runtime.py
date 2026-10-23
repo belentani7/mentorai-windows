@@ -20,6 +20,11 @@ def main() -> int:
     answer = engine.process_query("¿Qué es powershel?")
     assert answer["status"] == "success"
     assert answer["matched_term"] == "powershell"
+    # «git» appears inside «digital», but is not a separate topic token.
+    digital = engine.process_query("Quiero aprender sobre mi vida digital")
+    assert digital["matched_term"] != "git"
+    unknown_language = engine.process_query("tema inexistente zzzqqq", "xx")
+    assert unknown_language["explanation"].startswith("Todavía no tengo")
     sensitive = engine.process_query(
         "Mi email es persona@example.com y mi clave es sk_test_1234567890123456"
     )
@@ -33,6 +38,11 @@ def main() -> int:
         after = store.get_progress()
         assert after.points == before.points + 10
         assert store.get_history(1)[0].question == "Pregunta local"
+        # El informe de privacidad debe contar TODO, no solo la página de 100.
+        for index in range(101):
+            store.record_query(f"Pregunta {index}", "Respuesta", "Prueba")
+        assert len(store.get_history(100)) == 100
+        assert store.export_privacy_summary()["history_records"] == 102
 
         security = SecurityManager(data_dir=Path(folder) / "security")
         token = security.encrypt_data("dato confidencial", "smoke")
