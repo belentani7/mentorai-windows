@@ -20,6 +20,26 @@ class AssistantEngine:
 
     MAX_QUERY_LENGTH = 12_000
 
+    # Secuencias curadas: todos los pasos se resuelven contra temas reales.
+    LEARNING_PATHS = {
+        "windows": {
+            "title": "Windows desde cero",
+            "topics": ("cd", "dir", "ipconfig", "powershell", "Get-Process"),
+        },
+        "python": {
+            "title": "Primeros pasos programando",
+            "topics": ("python", "print", "git", "git clone", "git branch"),
+        },
+        "git": {
+            "title": "Git y colaboración",
+            "topics": ("git", "git clone", "git branch", "git pull", "git merge", "git push"),
+        },
+        "security": {
+            "title": "Seguridad digital práctica",
+            "topics": ("phishing", "password_security", "two_factor_authentication", "malware", "firewall", "vpn"),
+        },
+    }
+
     _SENSITIVE_PATTERNS = (
         re.compile(r"(?i)\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b"),
         re.compile(r"\b(?:\d[ -]*?){13,19}\b"),
@@ -136,6 +156,25 @@ class AssistantEngine:
                     }
                 )
         return sorted(topics, key=lambda topic: (topic["category"], topic["label"]))
+
+    def get_learning_paths(self) -> list[dict[str, Any]]:
+        """Construye rutas guiadas únicamente con temas instalados en la KB local."""
+        return [
+            {
+                "id": path_id,
+                "title": definition["title"],
+                "topics": [
+                    {
+                        "key": topic,
+                        "label": topic.replace("_", " ").title(),
+                        "category": str(self.knowledge_base[topic].get("category", "General")),
+                    }
+                    for topic in definition["topics"]
+                    if topic in self.knowledge_base
+                ],
+            }
+            for path_id, definition in self.LEARNING_PATHS.items()
+        ]
 
     def process_query(
         self, extracted_text: str, language: str = "es"
