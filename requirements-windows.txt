@@ -1,6 +1,6 @@
 PyQt5==5.15.11
 cryptography==50.0.0
 PyInstaller==6.11.1
-Pillow==12.3.0
+Pillow==13.0.0
 pytesseract==0.3.13
 uiautomation==2.0.29; sys_platform == "win32"
