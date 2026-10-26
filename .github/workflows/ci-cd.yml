@@ -101,7 +101,7 @@ jobs:
           --ignore=E203,W503,E402,E501,W293
       - name: Check formatting of active sources
         run: >-
-          black --check core/assistant_engine.py core/local_store.py core/security_manager.py
+          black --check --diff core/assistant_engine.py core/local_store.py core/security_manager.py
           core/screen_orchestrator.py cli/mentorai_cli.py ui/mentorai_windows_ui.py
           native_modules/windows_screen_reader.py native_modules/windows_hotkey.py
           tests/smoke_runtime.py tests/ui_smoke.py tests/penetration_testing.py
