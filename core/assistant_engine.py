@@ -107,7 +107,9 @@ class AssistantEngine:
         exact = [
             (key, len(normalised))
             for key, normalised in self._normalised_keys.items()
-            if re.search(r"(?<!\w)" + re.escape(normalised) + r"(?!\w)", query_normalised)
+            if re.search(
+                r"(?<!\w)" + re.escape(normalised) + r"(?!\w)", query_normalised
+            )
         ]
         if exact:
             return max(exact, key=lambda item: item[1])[0]
