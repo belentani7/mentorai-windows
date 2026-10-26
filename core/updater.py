@@ -146,21 +146,17 @@ class UpdateManager:
             return f.readlines()
     
     def enable_auto_updates(self):
-        """Habilitar actualizaciones automáticas"""
-        config_path = Path.home() / ".mentorai" / "config.json"
-        
-        config = {}
-        if config_path.exists():
-            with open(config_path, 'r') as f:
-                config = json.load(f)
-        
-        config['auto_updates'] = True
-        config['check_updates_interval'] = 86400  # 24 horas
-        
-        with open(config_path, 'w') as f:
-            json.dump(config, f, indent=2)
-        
-        self.log_update("Actualizaciones automáticas habilitadas")
+        """Refuse to advertise an updater that cannot authenticate packages.
+
+        The downloader, installer and rollback deliberately fail closed. Do not
+        persist auto_updates=True until all three operations are implemented
+        and verified; preserve existing user configuration untouched.
+        """
+        self.log_update(
+            "Actualizaciones automáticas no disponibles: se requiere descarga "
+            "autenticada, firma verificada y recuperación atómica."
+        )
+        return False
     
     def disable_auto_updates(self):
         """Deshabilitar actualizaciones automáticas"""
