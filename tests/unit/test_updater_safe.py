@@ -35,3 +35,25 @@ def test_rollback_never_removes_an_existing_app_or_unverified_backup(tmp_path, m
     assert (app_dir / "critical.exe").read_bytes() == b"installed version"
     assert (backup / "critical.exe").read_bytes() == b"untrusted backup"
     assert "Rollback automático bloqueado" in updater.update_log_path.read_text(encoding="utf-8")
+
+
+def test_auto_updates_cannot_be_enabled_while_installation_is_disabled(tmp_path, monkeypatch):
+    """A settings toggle must not promise updates that cannot be installed."""
+    monkeypatch.setattr("pathlib.Path.home", lambda: tmp_path)
+    updater = UpdateManager()
+    config_path = tmp_path / ".mentorai" / "config.json"
+    original = b'{"auto_updates": false, "user_preference": "offline"}\\n'
+    config_path.write_bytes(original)
+
+    assert updater.enable_auto_updates() is False
+    assert config_path.read_bytes() == original
+    assert "no disponibles" in updater.update_log_path.read_text(encoding="utf-8")
+
+
+def test_auto_updates_do_not_create_an_enabled_config(tmp_path, monkeypatch):
+    monkeypatch.setattr("pathlib.Path.home", lambda: tmp_path)
+    updater = UpdateManager()
+    config_path = tmp_path / ".mentorai" / "config.json"
+
+    assert updater.enable_auto_updates() is False
+    assert not config_path.exists()
