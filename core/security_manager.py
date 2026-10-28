@@ -214,20 +214,17 @@ class SecurityManager:
 
     @staticmethod
     def _best_effort_delete(path: Path) -> None:
-        if not path.exists():
-            return
-        if path.is_file():
-            try:
-                size = path.stat().st_size
-                with path.open("r+b") as handle:
-                    handle.write(b"\0" * min(size, 1024 * 1024))
-                    handle.flush()
-                    os.fsync(handle.fileno())
-            except OSError:
-                pass
+        """Remove local data without following symlinks or promising secure erase.
+
+        In particular, never overwrite the contents of a symlink target:
+        the target may be a user's unrelated file outside the data directory.
+        """
+        if path.is_symlink():
             path.unlink(missing_ok=True)
         elif path.is_dir():
             shutil.rmtree(path, ignore_errors=False)
+        else:
+            path.unlink(missing_ok=True)
 
     def wipe_all_data(self, paths: Iterable[str | Path] | None = None) -> str:
         """Elimina datos locales seleccionados; el usuario debe confirmar la acción en la UI."""
