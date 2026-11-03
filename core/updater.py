@@ -116,23 +116,19 @@ class UpdateManager:
         return False
 
     def rollback_update(self):
-        """Revertir a versión anterior si hay error"""
-        try:
-            backup_dir = Path.home() / ".mentorai" / f"backup_{self.app_version}"
-            
-            if backup_dir.exists():
-                # Restaurar desde backup
-                shutil.rmtree(self.app_dir)
-                shutil.copytree(backup_dir, self.app_dir)
-                self.log_update("Rollback completado")
-                return True
-            
-            return False
-        
-        except Exception as e:
-            self.log_update(f"Error en rollback: {e}")
-            return False
-    
+        """Do not destroy an installation from an unverified backup.
+
+        The automatic installer is intentionally disabled until signed,
+        authenticated updates and an atomic rollback mechanism are available.
+        The previous implementation removed the running application directory
+        before checking integrity or being able to restore it safely.
+        """
+        self.log_update(
+            "Rollback automático bloqueado: aún no existe un mecanismo "
+            "atómico y firmado de recuperación. La instalación no se modificó."
+        )
+        return False
+
     def log_update(self, message):
         """Registrar evento de actualización"""
         timestamp = datetime.now().isoformat()
@@ -150,21 +146,17 @@ class UpdateManager:
             return f.readlines()
     
     def enable_auto_updates(self):
-        """Habilitar actualizaciones automáticas"""
-        config_path = Path.home() / ".mentorai" / "config.json"
-        
-        config = {}
-        if config_path.exists():
-            with open(config_path, 'r') as f:
-                config = json.load(f)
-        
-        config['auto_updates'] = True
-        config['check_updates_interval'] = 86400  # 24 horas
-        
-        with open(config_path, 'w') as f:
-            json.dump(config, f, indent=2)
-        
-        self.log_update("Actualizaciones automáticas habilitadas")
+        """Refuse to advertise an updater that cannot authenticate packages.
+
+        The downloader, installer and rollback deliberately fail closed. Do not
+        persist auto_updates=True until all three operations are implemented
+        and verified; preserve existing user configuration untouched.
+        """
+        self.log_update(
+            "Actualizaciones automáticas no disponibles: se requiere descarga "
+            "autenticada, firma verificada y recuperación atómica."
+        )
+        return False
     
     def disable_auto_updates(self):
         """Deshabilitar actualizaciones automáticas"""

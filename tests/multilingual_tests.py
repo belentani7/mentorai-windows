@@ -5,13 +5,18 @@ Pruebas en Portugués, Español, Inglés y Catalán
 """
 
 import sys
-sys.path.insert(0, '/home/ubuntu/asistente_educativo')
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 
 from core.assistant_engine import AssistantEngine
 
 class MultilingualTester:
     def __init__(self):
-        self.engine = AssistantEngine('/home/ubuntu/asistente_educativo/knowledge_base')
+        self.engine = AssistantEngine(ROOT / 'knowledge_base')
+        if len(self.engine.knowledge_base) < 35:
+            raise AssertionError('Base de conocimiento local ausente o incompleta')
         self.results = {
             "portuguese": [],
             "spanish": [],
@@ -35,8 +40,8 @@ class MultilingualTester:
         
         print("\n🇵🇹 Testando consultas em Português:")
         for query in queries:
-            result = self.engine.process_query(query)
-            success = result.get("status") == "success"
+            result = self.engine.process_query(query, "pt")
+            success = result.get("status") == "success" and result.get("matched_term") is not None
             
             print(f"\n  Pergunta: '{query}'")
             print(f"  Resposta: {result.get('explanation', 'N/A')[:60]}...")
@@ -65,8 +70,8 @@ class MultilingualTester:
         
         print("\n🇪🇸 Probando consultas en Español:")
         for query in queries:
-            result = self.engine.process_query(query)
-            success = result.get("status") == "success"
+            result = self.engine.process_query(query, "es")
+            success = result.get("status") == "success" and result.get("matched_term") is not None
             
             print(f"\n  Pregunta: '{query}'")
             print(f"  Respuesta: {result.get('explanation', 'N/A')[:60]}...")
@@ -95,8 +100,8 @@ class MultilingualTester:
         
         print("\n🇬🇧 Testing queries in English:")
         for query in queries:
-            result = self.engine.process_query(query)
-            success = result.get("status") == "success"
+            result = self.engine.process_query(query, "en")
+            success = result.get("status") == "success" and result.get("matched_term") is not None
             
             print(f"\n  Question: '{query}'")
             print(f"  Answer: {result.get('explanation', 'N/A')[:60]}...")
@@ -123,8 +128,8 @@ class MultilingualTester:
         
         print("\n🇪🇸 Provant consultes en Català:")
         for query in queries:
-            result = self.engine.process_query(query)
-            success = result.get("status") == "success"
+            result = self.engine.process_query(query, "ca")
+            success = result.get("status") == "success" and result.get("matched_term") is not None
             
             print(f"\n  Pregunta: '{query}'")
             print(f"  Resposta: {result.get('explanation', 'N/A')[:60]}...")
@@ -144,14 +149,14 @@ class MultilingualTester:
         print("\n🔄 Mismo concepto en diferentes idiomas:")
         
         queries = {
-            "Spanish": "¿Qué es cd?",
-            "English": "What is cd?",
-            "Portuguese": "O que é cd?",
-            "Catalan": "Què és cd?"
+            "Spanish": ("es", "¿Qué es cd?"),
+            "English": ("en", "What is cd?"),
+            "Portuguese": ("pt", "O que é cd?"),
+            "Catalan": ("ca", "Què és cd?")
         }
         
-        for language, query in queries.items():
-            result = self.engine.process_query(query)
+        for language, (code, query) in queries.items():
+            result = self.engine.process_query(query, code)
             print(f"\n  {language}: '{query}'")
             print(f"  Explicación: {result.get('explanation', 'N/A')[:70]}...")
 
@@ -187,6 +192,19 @@ class MultilingualTester:
         self.test_language_switching()
         self.test_mixed_language_queries()
         
+        # Contrato comprobable: términos conocidos y mensajes fallback por idioma.
+        for code, prefix in (
+            ("es", "Todavía no tengo"),
+            ("en", "I do not have"),
+            ("pt", "Ainda não tenho"),
+            ("ca", "Encara no tinc"),
+        ):
+            known = self.engine.process_query("Python", code)
+            assert known["matched_term"] == "python", (code, known)
+            unknown = self.engine.process_query(f"zzzxxyy-unknown-{code}", code)
+            assert unknown["matched_term"] is None, (code, unknown)
+            assert unknown["explanation"].startswith(prefix), (code, unknown)
+
         # Resumen
         print("\n" + "=" * 60)
         print("RESUMEN DE PRUEBAS MULTIIDIOMA")
@@ -221,23 +239,11 @@ class MultilingualTester:
         print("CONCLUSIONES MULTIIDIOMA")
         print("=" * 60)
         
-        print("\n✓ MentorAI soporta múltiples idiomas:")
-        print("  • Español: Totalmente soportado")
-        print("  • English: Totalmente soportado")
-        print("  • Português: Totalmente soportado")
-        print("  • Català: Totalmente soportado")
-        
-        print("\n✓ Características multiidioma:")
-        print("  • Búsqueda flexible en diferentes idiomas")
-        print("  • Corrección de errores de ortografía")
-        print("  • Soporte para consultas mixtas")
-        print("  • Respuestas contextuales")
-        
-        print("\n✓ Recomendación:")
-        print("  • MentorAI es accesible para usuarios de múltiples idiomas")
-        print("  • La base de conocimiento podría expandirse con más idiomas")
-        print("  • Las interfaces podrían localizarse completamente")
-        
+        print("\nCobertura de coincidencias reales con temas instalados.")
+        print("Una respuesta genérica NO cuenta como explicación encontrada.")
+        print("Los mensajes de ausencia de tema se comprueban en ES/EN/PT/CA.")
+        print("La traducción del contenido educativo y la accesibilidad UI no se validan aquí.")
+
         print("\n" + "=" * 60)
 
 if __name__ == "__main__":

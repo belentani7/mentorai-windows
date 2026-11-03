@@ -62,7 +62,7 @@ LANGUAGE_NAMES = {
 
 
 class QueryWorker(QThread):
-    finished = pyqtSignal(dict)
+    result_ready = pyqtSignal(dict)
     failed = pyqtSignal(str)
 
     def __init__(self, engine: AssistantEngine, query: str, language: str):
@@ -73,13 +73,13 @@ class QueryWorker(QThread):
 
     def run(self) -> None:
         try:
-            self.finished.emit(self.engine.process_query(self.query, self.language))
+            self.result_ready.emit(self.engine.process_query(self.query, self.language))
         except Exception as exc:  # pragma: no cover - defensive UI boundary
             self.failed.emit(str(exc))
 
 
 class ScreenReadWorker(QThread):
-    finished = pyqtSignal(str)
+    result_ready = pyqtSignal(str)
     failed = pyqtSignal(str)
 
     def __init__(self, orchestrator: ScreenOrchestrator, mode: str, image: Any = None):
@@ -97,7 +97,7 @@ class ScreenReadWorker(QThread):
                     self.image,
                     (0, 0, self.image.width(), self.image.height()),
                 )
-            self.finished.emit(result)
+            self.result_ready.emit(result)
         except Exception as exc:  # pragma: no cover - defensive UI boundary
             self.failed.emit(str(exc))
 
@@ -295,6 +295,7 @@ class MentorAIWindow(QMainWindow):
         self.topics_list.setObjectName("TopicsList")
         self.topics_list.setAccessibleName("Temas educativos disponibles")
         self.topics_list.itemClicked.connect(self._topic_selected)
+        self.topics_list.itemActivated.connect(self._topic_selected)
         layout.addWidget(self.topics_list, 1)
 
         progress_title = QLabel("TU PROGRESO")
@@ -338,6 +339,7 @@ class MentorAIWindow(QMainWindow):
 
         self.response_text = QTextBrowser()
         self.response_text.setObjectName("ResponsePanel")
+        self.response_text.setAccessibleName("Respuesta educativa local")
         self.response_text.setOpenExternalLinks(True)
         self.response_text.setPlainText(
             "Escribe una pregunta o elige un tema.\n\n"
@@ -437,23 +439,28 @@ class MentorAIWindow(QMainWindow):
 
     def send_query(self) -> None:
         query = self.input_field.text().strip()
-        if not query or self.worker is not None and self.worker.isRunning():
+        if not query or self.worker is not None:
             return
         self.last_question = query
+        self.last_response = None
         self.input_field.clear()
+        self.input_field.setEnabled(False)
         self.send_button.setEnabled(False)
         self.response_text.setPlainText("Procesando localmente…")
         self.complete_button.setVisible(False)
         self.status.showMessage("Consultando la base de conocimiento local…")
         self.worker = QueryWorker(self.engine, query, self.language)
-        self.worker.finished.connect(self._query_finished)
+        self.worker.result_ready.connect(self._query_finished)
         self.worker.failed.connect(self._query_failed)
+        # QThread.finished is emitted only after run() exits; safe for deleteLater.
         self.worker.finished.connect(self._release_query_worker)
-        self.worker.failed.connect(self._release_query_worker)
         self.worker.start()
 
     def _release_query_worker(self, *_args) -> None:
+        self.input_field.setEnabled(True)
         self.send_button.setEnabled(True)
+        if self.last_response is None or self.last_response.get("status") != "success":
+            self.input_field.setFocus(Qt.OtherFocusReason)
         if self.worker is not None:
             self.worker.deleteLater()
             self.worker = None
@@ -464,10 +471,13 @@ class MentorAIWindow(QMainWindow):
             self.response_text.setPlainText(
                 str(response.get("message", "No se pudo procesar la consulta."))
             )
+            if not self.input_field.text():
+                self.input_field.setText(self.last_question)
             self.status.showMessage("Consulta no procesada")
             return
         body = self._format_response(response)
         self.response_text.setPlainText(body)
+        self.response_text.setFocus(Qt.OtherFocusReason)
         self.store.record_query(
             response.get("original_query", ""), body, response.get("topic", "General")
         )
@@ -478,6 +488,9 @@ class MentorAIWindow(QMainWindow):
         )
 
     def _query_failed(self, message: str) -> None:
+        self.last_response = None
+        if not self.input_field.text():
+            self.input_field.setText(self.last_question)
         self.response_text.setPlainText(
             f"No se pudo completar la consulta local.\n\nDetalle: {message}"
         )
@@ -532,19 +545,18 @@ class MentorAIWindow(QMainWindow):
         self.progress_bar.setFormat(f"{percent}%")
 
     def read_focused_control(self) -> None:
-        if self.screen_worker is not None and self.screen_worker.isRunning():
+        if self.screen_worker is not None:
             return
         self.status.showMessage("Leyendo únicamente el control accesible enfocado…")
         self.focused_button.setEnabled(False)
         self.screen_worker = ScreenReadWorker(self.screen_orchestrator, "focused")
-        self.screen_worker.finished.connect(self._screen_text_ready)
+        self.screen_worker.result_ready.connect(self._screen_text_ready)
         self.screen_worker.failed.connect(self._screen_read_failed)
         self.screen_worker.finished.connect(self._release_screen_worker)
-        self.screen_worker.failed.connect(self._release_screen_worker)
         self.screen_worker.start()
 
     def arm_professor_mode(self) -> None:
-        if self.screen_overlay is not None:
+        if self.screen_overlay is not None or self.screen_worker is not None:
             return
         screen = QApplication.primaryScreen()
         if screen is None:
@@ -562,14 +574,16 @@ class MentorAIWindow(QMainWindow):
         )
 
     def _area_selected(self, pixmap: QPixmap) -> None:
+        if self.screen_worker is not None:
+            self.status.showMessage("Ya hay una lectura local en curso")
+            return
         image = pixmap.toImage().convertToFormat(QImage.Format_RGBA8888)
         self.status.showMessage("Área seleccionada · OCR local opcional en curso…")
         self.area_button.setEnabled(False)
         self.screen_worker = ScreenReadWorker(self.screen_orchestrator, "ocr", image)
-        self.screen_worker.finished.connect(self._screen_text_ready)
+        self.screen_worker.result_ready.connect(self._screen_text_ready)
         self.screen_worker.failed.connect(self._screen_read_failed)
         self.screen_worker.finished.connect(self._release_screen_worker)
-        self.screen_worker.failed.connect(self._release_screen_worker)
         self.screen_worker.start()
 
     def _overlay_closed(self) -> None:
@@ -657,12 +671,14 @@ class MentorAIWindow(QMainWindow):
             )
 
     def closeEvent(self, event):
-        if self.worker is not None and self.worker.isRunning():
-            self.worker.quit()
-            self.worker.wait(1500)
-        if self.screen_worker is not None and self.screen_worker.isRunning():
-            self.screen_worker.quit()
-            self.screen_worker.wait(1500)
+        # quit() cannot interrupt run() without a QThread event loop. Do not
+        # destroy a running OCR/query worker (QThread: Destroyed while running).
+        if (self.worker is not None and self.worker.isRunning()) or (
+            self.screen_worker is not None and self.screen_worker.isRunning()
+        ):
+            self.status.showMessage("Espera a que termine la consulta o lectura local")
+            event.ignore()
+            return
         self.professor_hotkey.unregister()
         if QApplication.instance() is not None:
             QApplication.instance().removeNativeEventFilter(self.professor_hotkey)
