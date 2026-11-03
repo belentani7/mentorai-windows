@@ -117,7 +117,7 @@ jobs:
           cp README.md LICENSE.md requirements-windows.txt dist/source/
           tar -czf mentorai-${{ github.sha }}.tar.gz dist/
       - name: Upload source snapshot
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: mentorai-source-${{ github.sha }}
           path: mentorai-${{ github.sha }}.tar.gz
