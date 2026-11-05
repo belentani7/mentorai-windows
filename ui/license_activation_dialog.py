@@ -4,14 +4,23 @@ MentorAI - Diálogo de Activación de Licencia
 Interfaz PyQt5 para activar licencias compradas
 """
 
-from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
-    QPushButton, QMessageBox, QTabWidget, QWidget, QTextEdit
-)
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QFont
 import sys
 from pathlib import Path
+
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import (
+    QDialog,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QMessageBox,
+    QPushButton,
+    QTabWidget,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
+)
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 

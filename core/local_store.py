@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 import sqlite3
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -81,7 +81,7 @@ class LocalStore:
                 CREATE INDEX IF NOT EXISTS idx_history_user_created
                     ON history(user_id, created_at DESC);
                 """)
-            now = datetime.now(timezone.utc).isoformat()
+            now = datetime.now(UTC).isoformat()
             connection.execute(
                 "INSERT OR IGNORE INTO profile(user_id, language, created_at, updated_at) VALUES (?, 'es', ?, ?)",
                 (self.USER_ID, now, now),
@@ -103,7 +103,7 @@ class LocalStore:
         with self._connect() as connection:
             connection.execute(
                 "UPDATE profile SET language = ?, updated_at = ? WHERE user_id = ?",
-                (language, datetime.now(timezone.utc).isoformat(), self.USER_ID),
+                (language, datetime.now(UTC).isoformat(), self.USER_ID),
             )
 
     def get_progress(self) -> Progress:
@@ -131,7 +131,7 @@ class LocalStore:
         self, question: str, answer: str, topic: str = "General"
     ) -> Progress:
         """Guarda una interacción cifrada y recompensa una consulta educativa."""
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         question_token = self.security.encrypt_data(question, "history.question")
         answer_token = self.security.encrypt_data(answer, "history.answer")
         with self._connect() as connection:

@@ -13,8 +13,8 @@ import os
 import secrets
 import shutil
 import sys
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 try:
     from cryptography.hazmat.primitives.ciphers.aead import AESGCM

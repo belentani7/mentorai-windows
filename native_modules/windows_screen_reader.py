@@ -73,7 +73,6 @@ class WindowsScreenReader:
             if hasattr(image, "bits") and hasattr(image, "width"):
                 # QImage.Format_RGBA8888 llega desde la UI; se convierte solo en memoria.
                 from PIL import Image
-
                 from PyQt5.QtGui import QImage
 
                 converted = image.convertToFormat(QImage.Format_RGBA8888)

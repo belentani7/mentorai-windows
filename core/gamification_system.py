@@ -4,9 +4,8 @@ Gamification System for MentorAI
 Sistema de gamificación con puntos, logros y progresión
 """
 
-import json
 from datetime import datetime
-from typing import Dict, List
+
 
 class GamificationSystem:
     """
@@ -25,7 +24,7 @@ class GamificationSystem:
         self.leaderboard_position = 0
         self.created_at = datetime.now().isoformat()
         
-    def add_points(self, amount: int, reason: str) -> Dict:
+    def add_points(self, amount: int, reason: str) -> dict:
         """Añadir puntos por una acción específica."""
         self.points += amount
         
@@ -58,7 +57,7 @@ class GamificationSystem:
         
         return level
     
-    def complete_topic(self, topic: str) -> Dict:
+    def complete_topic(self, topic: str) -> dict:
         """Marcar un tema como completado."""
         if topic in self.topics_completed:
             return {"status": "already_completed", "message": f"Ya completaste {topic}"}
@@ -93,7 +92,7 @@ class GamificationSystem:
                 "unlocked_at": datetime.now().isoformat()
             })
     
-    def get_daily_challenge(self) -> Dict:
+    def get_daily_challenge(self) -> dict:
         """Obtener el desafío diario."""
         challenges = [
             {
@@ -121,7 +120,7 @@ class GamificationSystem:
         
         return challenges
     
-    def get_user_profile(self) -> Dict:
+    def get_user_profile(self) -> dict:
         """Obtener el perfil completo del usuario."""
         return {
             "user_id": self.user_id,
@@ -134,7 +133,7 @@ class GamificationSystem:
             "created_at": self.created_at
         }
     
-    def _get_progress_to_next_level(self) -> Dict:
+    def _get_progress_to_next_level(self) -> dict:
         """Calcular el progreso hacia el siguiente nivel."""
         current_threshold = self._get_level_threshold(self.level)
         next_threshold = self._get_level_threshold(self.level + 1)
@@ -158,7 +157,7 @@ class GamificationSystem:
             threshold += 100 * i
         return threshold
     
-    def get_leaderboard_position(self, all_users_points: List[int]) -> int:
+    def get_leaderboard_position(self, all_users_points: list[int]) -> int:
         """Calcular la posición en el ranking global."""
         position = 1
         for points in all_users_points:
@@ -166,7 +165,7 @@ class GamificationSystem:
                 position += 1
         return position
     
-    def get_achievements_list(self) -> List[Dict]:
+    def get_achievements_list(self) -> list[dict]:
         """Obtener lista de logros disponibles."""
         all_achievements = [
             {"id": "first_topic", "title": "Primer paso", "description": "Completa tu primer tema"},
@@ -190,7 +189,7 @@ class GamificationSystem:
             for achievement in all_achievements
         ]
     
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Convertir el perfil a diccionario."""
         return {
             "user_id": self.user_id,

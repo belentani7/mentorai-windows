@@ -4,12 +4,11 @@ MentorAI - Gestor de Pagos con Stripe
 Integración segura de pagos para licencias
 """
 
-import json
 import hashlib
 import hmac
-from pathlib import Path
+import json
 from datetime import datetime, timedelta
-from typing import Optional, Dict
+from pathlib import Path
 
 
 class LicenseManager:
@@ -61,7 +60,7 @@ class LicenseManager:
         self.log_payment(f"Licencia activada: {license_key}")
         return True
     
-    def get_license_info(self) -> Optional[Dict]:
+    def get_license_info(self) -> dict | None:
         """Obtener información de licencia"""
         if not self.license_file.exists():
             return None
@@ -81,12 +80,12 @@ class LicenseManager:
 class StripePaymentProcessor:
     """Procesador de pagos con Stripe (simulado para desarrollo)"""
     
-    def __init__(self, stripe_key: Optional[str] = None, app_dir=None, webhook_secret: Optional[str] = None):
+    def __init__(self, stripe_key: str | None = None, app_dir=None, webhook_secret: str | None = None):
         self.stripe_key = stripe_key or "sk_test_mentorai_dev"
         self.license_manager = LicenseManager(app_dir=app_dir)
         self.webhook_secret = webhook_secret or "whsec_mentorai_dev"
     
-    def create_payment_session(self, email: str, product: str, amount: int) -> Dict:
+    def create_payment_session(self, email: str, product: str, amount: int) -> dict:
         """
         Crear sesión de pago Stripe
         
@@ -115,7 +114,7 @@ class StripePaymentProcessor:
         self.license_manager.log_payment(f"Pago verificado: {session_id}")
         return True
     
-    def process_webhook(self, event_data: Dict, signature: str) -> bool:
+    def process_webhook(self, event_data: dict, signature: str) -> bool:
         """Procesar webhook de Stripe"""
         # Verificar firma del webhook
         expected_sig = hmac.new(
@@ -192,7 +191,7 @@ class PaymentUI:
         
         return True
     
-    def show_license_activation(self) -> Optional[str]:
+    def show_license_activation(self) -> str | None:
         """Mostrar diálogo de activación de licencia"""
         license_info = self.processor.license_manager.get_license_info()
         
@@ -200,7 +199,7 @@ class PaymentUI:
             print("No hay licencia activada. Compra una en mentorai.com")
             return None
         
-        print(f"\n=== LICENCIA ACTIVADA ===")
+        print("\n=== LICENCIA ACTIVADA ===")
         print(f"Email: {license_info.get('email')}")
         print(f"Clave: {license_info.get('license_key')}")
         print(f"Expira: {license_info.get('expiry_date')}")

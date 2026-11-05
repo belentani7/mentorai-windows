@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import pathlib
-import struct
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]

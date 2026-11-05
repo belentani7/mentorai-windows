@@ -5,9 +5,11 @@ Pruebas de usabilidad desde la perspectiva de un niño de 12 años
 """
 
 import sys
+
 sys.path.insert(0, '/home/ubuntu/asistente_educativo')
 
 from core.assistant_engine import AssistantEngine
+
 
 class KidUsabilityTester:
     def __init__(self):
@@ -35,7 +37,7 @@ class KidUsabilityTester:
             print(f"\n👦 Pregunta: '{query}'")
             print(f"   Explicación: {result.get('explanation', 'N/A')[:60]}...")
             print(f"   Pasos: {len(result.get('steps', []))} pasos disponibles")
-            print(f"   ✓ ENTENDIBLE" if success else "   ✗ CONFUSO")
+            print("   ✓ ENTENDIBLE" if success else "   ✗ CONFUSO")
             
             self.test_results.append({
                 "query": query,

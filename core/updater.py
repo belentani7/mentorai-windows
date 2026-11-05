@@ -4,15 +4,11 @@ MentorAI - Sistema de Actualizaciones Automáticas
 Verifica y descarga actualizaciones de forma segura
 """
 
-import json
-import os
 import hashlib
+import json
 import shutil
-import tempfile
-from pathlib import Path
 from datetime import datetime
-from urllib.request import urlopen, Request
-from urllib.error import URLError
+from pathlib import Path
 
 
 class UpdateManager:
@@ -226,7 +222,7 @@ if __name__ == "__main__":
     
     print("=== SISTEMA DE ACTUALIZACIONES MENTORAI ===\n")
     print(f"Versión actual: {updater.app_version}")
-    print(f"Verificando actualizaciones...")
+    print("Verificando actualizaciones...")
     
     if updater.check_for_updates():
         print("✅ Actualizaciones disponibles")

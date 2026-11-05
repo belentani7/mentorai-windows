@@ -4,11 +4,11 @@ Semantic Search Engine for MentorAI
 Motor de búsqueda semántica con embeddings y machine learning
 """
 
+import difflib
 import json
 import os
-import re
 from collections import defaultdict
-import difflib
+
 
 class SemanticSearchEngine:
     """
@@ -204,7 +204,7 @@ if __name__ == "__main__":
     goal = "Quiero aprender seguridad"
     path = engine.get_learning_path(goal)
     print(f"Objetivo: '{goal}'")
-    print(f"Ruta recomendada:")
+    print("Ruta recomendada:")
     for i, topic in enumerate(path, 1):
         print(f"  {i}. {topic}")
     

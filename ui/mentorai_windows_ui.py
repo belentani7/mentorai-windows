@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from PyQt5.QtCore import QThread, Qt, pyqtSignal
+from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtGui import QColor, QFont, QImage, QKeySequence, QPainter, QPixmap
 from PyQt5.QtWidgets import (
     QApplication,
@@ -118,7 +118,7 @@ class ScreenSelectionOverlay(QWidget):
         self.setCursor(Qt.CrossCursor)
         self.setWindowTitle("MentorAI — Selección explícita")
 
-    def paintEvent(self, event):  # noqa: ARG002
+    def paintEvent(self, event):
         painter = QPainter(self)
         painter.drawPixmap(0, 0, self.pixmap)
         painter.fillRect(self.rect(), QColor(10, 20, 30, 90))

@@ -42,7 +42,7 @@ class WindowsProfessorHotkey(QObject, QAbstractNativeEventFilter):
             ctypes.windll.user32.UnregisterHotKey(None, self.HOTKEY_ID)
         self.registered = False
 
-    def nativeEventFilter(self, eventType, message):  # noqa: N802
+    def nativeEventFilter(self, eventType, message):
         if platform.system() != "Windows":
             return False, 0
         try:

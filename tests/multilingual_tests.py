@@ -5,9 +5,11 @@ Pruebas en Portugués, Español, Inglés y Catalán
 """
 
 import sys
+
 sys.path.insert(0, '/home/ubuntu/asistente_educativo')
 
 from core.assistant_engine import AssistantEngine
+
 
 class MultilingualTester:
     def __init__(self):

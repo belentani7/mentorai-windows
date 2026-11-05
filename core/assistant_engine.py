@@ -65,7 +65,7 @@ class AssistantEngine:
         re.compile(r"(?i)\b(?:postgres(?:ql)?|mysql|mariadb)://[^\s]+"),
         re.compile(
             r"-----BEGIN [A-Z ]+ PRIVATE KEY-----.*?-----END [A-Z ]+ PRIVATE KEY-----",
-            re.S,
+            re.DOTALL,
         ),
     )
 

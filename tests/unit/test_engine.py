@@ -6,6 +6,7 @@ sys.path.insert(0, str(ROOT))
 
 from core.assistant_engine import AssistantEngine
 
+
 def test_engine():
     kb_path = ROOT / 'knowledge_base'
     engine = AssistantEngine(kb_path)

@@ -4,9 +4,9 @@ Security Testing Suite for MentorAI
 Pruebas de seguridad para detectar vulnerabilidades
 """
 
-import sys
 import json
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT))
 
 from core.assistant_engine import AssistantEngine
 from core.security_manager import SecurityManager
+
 
 class SecurityTester:
     def __init__(self):
@@ -57,7 +58,7 @@ class SecurityTester:
                 self.passed_tests.append(f"Code Injection blocked: {payload[:30]}")
             except Exception as e:
                 print(f"  ✓ Exception caught (safe): {str(e)[:40]}...")
-                self.passed_tests.append(f"Code Injection exception caught")
+                self.passed_tests.append("Code Injection exception caught")
 
     def test_sensitive_data_filtering(self):
         """Probar filtrado de datos sensibles"""
@@ -137,10 +138,10 @@ class SecurityTester:
                 self.passed_tests.append("Encryption/Decryption verified")
             else:
                 self.vulnerabilities.append("Decryption doesn't match original data")
-                print(f"  ✗ Decryption mismatch!")
+                print("  ✗ Decryption mismatch!")
         except Exception as e:
-            print(f"  ✗ Encryption error: {str(e)}")
-            self.vulnerabilities.append(f"Encryption error: {str(e)}")
+            print(f"  ✗ Encryption error: {e!s}")
+            self.vulnerabilities.append(f"Encryption error: {e!s}")
 
     def test_knowledge_base_integrity(self):
         """Verificar integridad de la base de conocimiento"""

@@ -4,19 +4,18 @@ MentorAI - GUI Application
 Interfaz gráfica completa y funcional para Windows y Linux
 """
 
-import tkinter as tk
-from tkinter import ttk, scrolledtext, messagebox
 import sys
-import os
-import json
+import tkinter as tk
 from pathlib import Path
+from tkinter import messagebox, scrolledtext, ttk
 
 # Añadir el directorio core al path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from core.assistant_engine import AssistantEngine
-from core.security_manager import SecurityManager
 from core.gamification_system import GamificationSystem
+from core.security_manager import SecurityManager
+
 
 class MentorAIGUI:
     def __init__(self, root):
@@ -262,7 +261,7 @@ class MentorAIGUI:
         except Exception as e:
             self.response_text.config(state=tk.NORMAL)
             self.response_text.delete(1.0, tk.END)
-            self.response_text.insert(tk.END, f"❌ Error: {str(e)}\n\nPor favor, intenta de nuevo.")
+            self.response_text.insert(tk.END, f"❌ Error: {e!s}\n\nPor favor, intenta de nuevo.")
             self.response_text.config(state=tk.DISABLED)
     
     def format_response(self, response):
@@ -411,12 +410,10 @@ GitHub: github.com/mentorai/mentorai
     def load_user_data(self):
         """Cargar datos del usuario"""
         # En una versión completa, esto cargaría datos del usuario
-        pass
     
     def save_user_data(self):
         """Guardar datos del usuario"""
         # En una versión completa, esto guardaría datos del usuario
-        pass
 
 
 def main():
