@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Runtime and UI smoke tests
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Security regression tests
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Beginner usability tests
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Multilingual tests
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -82,7 +82,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Code quality
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -109,7 +109,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Source package
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build source snapshot
         run: |
           mkdir -p dist/source
