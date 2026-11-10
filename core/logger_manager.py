@@ -16,16 +16,16 @@ class SecureLogger:
     def log_event(self, user_id, event_type, details):
         timestamp = datetime.datetime.now().isoformat()
         anon_id = self._anonymize_user(user_id)
-        
+
         log_entry = {
             "timestamp": timestamp,
             "user_id": anon_id,
             "event": event_type,
             "details": details
         }
-        
+
         log_file = os.path.join(self.log_dir, f"log_{datetime.date.today().isoformat()}.jsonl")
-        
+
         with open(log_file, "a", encoding="utf-8") as f:
             f.write(json.dumps(log_entry) + "\n")
 

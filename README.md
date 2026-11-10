@@ -1,4 +1,4 @@
-# MentorAI para Windows
+﻿# MentorAI para Windows
 
 MentorAI es un **profesor local de informática** para Windows 10/11. Ayuda a comprender informática básica, CMD, PowerShell, Python, Git, Docker, Android, Termux y seguridad digital mediante explicaciones y pasos guiados. No es un agente autónomo: **no ejecuta comandos, no hace clic, no modifica el sistema y no observa la pantalla en segundo plano**.
 
@@ -103,3 +103,76 @@ vive en el nodo central:
 | secure-t | Ciberseguridad e IA | https://github.com/belentani7/secure-t |
 
 **PT > ES > EN > CA.** Gratuito, accesible (WCAG) y conectado.
+
+<!-- repo-forge:readme:inicio -->
+## Qué es
+
+**MentorAI** — tutor local de informática (CLI + escritorio).
+
+Convertir conocimiento que ya existe en una ruta que una persona real puede recorrer hoy, sin pagar y sin que le pidan datos.
+
+## Estado medido
+
+| Dato | Valor |
+|---|---|
+| Lenguajes | Python, Markdown, JSON, HTML, JavaScript, CSS |
+| Archivos / líneas | 80 / 9126 |
+| Páginas HTML | 3 |
+| Tests detectados | 9 |
+| Cumplimiento de reglas | 34/34 (100.0%) |
+
+Todo lo anterior se midió en disco el 2026-11-10; no es una estimación.
+
+## Uso
+
+```bash
+python scripts/doctor.py   # verificación sin dependencias
+```
+
+## Estructura
+
+```
+archive/
+assets/
+brand/
+cli/
+core/
+data/
+deploy/
+docs/
+installer/
+knowledge_base/
+```
+
+## Diseño de plataforma
+
+- Motor de lecciones
+- Diagnóstico del entorno
+- Ejercicios con corrección
+- Progreso local
+- Exportar apuntes
+
+La ficha completa —máximo potencial, marca, fases de monetización y recursos— vive en
+[`plataforma/FICHA.md`](plataforma/FICHA.md). Los tokens de marca están en
+[`brand/tokens.css`](brand/tokens.css).
+
+## Reglas del proyecto
+
+Este repositorio sigue el catálogo oficial del ecosistema (`GH-*`, `WEB-*`, `ACC-*`,
+`SEO-*`, `COH-*`, `DEV-*`). El gate se ejecuta con:
+
+```bash
+python scripts/doctor.py
+```
+
+## Licencia
+
+MIT. Ver [`LICENSE`](LICENSE).
+<!-- repo-forge:readme:fin -->
+<!-- repo-forge:readme:fin -->
+<!-- repo-forge:readme:fin -->
+<!-- repo-forge:readme:fin -->
+
+## Producto
+
+Oferta, precio y cobro: [`producto/OFERTA.md`](producto/OFERTA.md) · [`producto/precios.json`](producto/precios.json) · [`producto/landing.html`](producto/landing.html)

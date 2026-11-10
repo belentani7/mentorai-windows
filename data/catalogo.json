@@ -1,0 +1,32 @@
+{
+  "nombre": "mentorai-windows",
+  "remoto": "https://github.com/belentani7/mentorai-windows",
+  "tipo": "web-static",
+  "modelo": "tutor local de informática (CLI + escritorio)",
+  "publico": "personas que aprenden Windows, CMD, Python o Git desde cero, sin conexión fiable",
+  "licencia": "MIT",
+  "medido": {
+    "archivos": 80,
+    "lineas": 9126,
+    "bytes": 334766,
+    "html": 3,
+    "tests": 9
+  },
+  "modulos": [
+    "Motor de lecciones",
+    "Diagnóstico del entorno",
+    "Ejercicios con corrección",
+    "Progreso local",
+    "Exportar apuntes"
+  ],
+  "paleta": {
+    "bg": "#fbfaf7",
+    "ink": "#1a1a1a",
+    "accent": "#056551"
+  },
+  "fuente": {
+    "ruta": "repos\\mentorai-windows",
+    "fecha": "2026-11-10"
+  },
+  "generado_por": "repo-forge"
+}

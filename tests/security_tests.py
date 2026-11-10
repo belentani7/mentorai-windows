@@ -32,7 +32,7 @@ class SecurityTester:
             "admin' --",
             "' UNION SELECT * FROM users --"
         ]
-        
+
         for payload in payloads:
             result = self.engine.process_query(payload)
             if "error" not in result.get("status", "").lower():
@@ -50,7 +50,7 @@ class SecurityTester:
             "eval('1+1')",
             "lambda: __import__('os').system('whoami')"
         ]
-        
+
         for payload in payloads:
             try:
                 result = self.engine.process_query(payload)
@@ -69,7 +69,7 @@ class SecurityTester:
             ("Mi Bitcoin es 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", "[CONFIDENCIAL]"),
             ("Mi Ethereum es 0x742d35Cc6634C0532925a3b844Bc9e7595f42bE", "[CONFIDENCIAL]"),
         ]
-        
+
         for input_text, expected_filter in test_cases:
             result = self.engine.process_query(input_text)
             original_query = result.get("original_query", "")
@@ -89,7 +89,7 @@ class SecurityTester:
             "<svg onload='alert(1)'>",
             "javascript:alert('XSS')"
         ]
-        
+
         for payload in payloads:
             result = self.engine.process_query(payload)
             # En una aplicación real, verificaríamos que el HTML está escapado
@@ -105,7 +105,7 @@ class SecurityTester:
             "/etc/shadow",
             "C:\\Windows\\System32\\config\\SAM"
         ]
-        
+
         for payload in payloads:
             result = self.engine.process_query(payload)
             print(f"  ✓ Path Traversal blocked: {payload[:30]}...")
@@ -115,7 +115,7 @@ class SecurityTester:
         """Intentar Buffer Overflow con strings muy largos"""
         print("\n[TEST 6] Buffer Overflow Attempts...")
         huge_string = "A" * 1000000  # 1 millón de caracteres
-        
+
         try:
             result = self.engine.process_query(huge_string)
             print(f"  ✓ Buffer Overflow handled: {len(huge_string)} character string processed")
@@ -128,11 +128,11 @@ class SecurityTester:
         """Probar que el cifrado funciona correctamente"""
         print("\n[TEST 7] Encryption Tests...")
         test_data = "This is sensitive data that should be encrypted"
-        
+
         try:
             encrypted = self.security_mgr.encrypt_data(test_data)
             decrypted = self.security_mgr.decrypt_data(encrypted)
-            
+
             if decrypted == test_data:
                 print(f"  ✓ Encryption/Decryption working: {test_data[:30]}...")
                 self.passed_tests.append("Encryption/Decryption verified")
@@ -146,15 +146,15 @@ class SecurityTester:
     def test_knowledge_base_integrity(self):
         """Verificar integridad de la base de conocimiento"""
         print("\n[TEST 8] Knowledge Base Integrity...")
-        
+
         if not self.engine.knowledge_base:
             self.vulnerabilities.append("Knowledge base is empty!")
             print("  ✗ Knowledge base is empty!")
             return
-        
+
         print(f"  ✓ Knowledge base loaded: {len(self.engine.knowledge_base)} entries")
         self.passed_tests.append(f"Knowledge base integrity verified: {len(self.engine.knowledge_base)} entries")
-        
+
         # Verificar que no hay datos sensibles en la base de conocimiento
         for key, value in self.engine.knowledge_base.items():
             value_str = json.dumps(value)
@@ -166,7 +166,7 @@ class SecurityTester:
         print("=" * 60)
         print("MentorAI SECURITY TEST SUITE")
         print("=" * 60)
-        
+
         self.test_sql_injection()
         self.test_code_injection()
         self.test_sensitive_data_filtering()
@@ -175,7 +175,7 @@ class SecurityTester:
         self.test_buffer_overflow()
         self.test_encryption()
         self.test_knowledge_base_integrity()
-        
+
         print("\n" + "=" * 60)
         print("TEST RESULTS SUMMARY")
         print("=" * 60)
@@ -184,14 +184,14 @@ class SecurityTester:
             print(f"  • {test}")
         if len(self.passed_tests) > 5:
             print(f"  ... and {len(self.passed_tests) - 5} more")
-        
+
         print(f"\n✗ VULNERABILITIES FOUND: {len(self.vulnerabilities)}")
         for vuln in self.vulnerabilities:
             print(f"  • {vuln}")
-        
+
         if not self.vulnerabilities:
             print("  ✓ No vulnerabilities detected!")
-        
+
         print("\n" + "=" * 60)
         return len(self.vulnerabilities) == 0
 

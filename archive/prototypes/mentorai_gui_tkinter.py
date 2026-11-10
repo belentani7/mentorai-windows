@@ -23,28 +23,28 @@ class MentorAIGUI:
         self.root.title("MentorAI - Tu Asistente Educativo Personal")
         self.root.geometry("900x700")
         self.root.configure(bg="#f0f0f0")
-        
+
         # Inicializar motor de asistencia
         self.engine = AssistantEngine()
         self.security = SecurityManager()
         self.gamification = GamificationSystem()
-        
+
         # Variables de usuario
         self.user_id = "user_001"
         self.current_language = "es"
-        
+
         # Crear interfaz
         self.create_widgets()
         self.load_user_data()
-    
+
     def create_widgets(self):
         """Crear todos los widgets de la interfaz"""
-        
+
         # ===== HEADER =====
         header_frame = tk.Frame(self.root, bg="#007AFF", height=80)
         header_frame.pack(fill=tk.X, padx=0, pady=0)
         header_frame.pack_propagate(False)
-        
+
         title_label = tk.Label(
             header_frame,
             text="🎓 MentorAI",
@@ -53,7 +53,7 @@ class MentorAIGUI:
             fg="white"
         )
         title_label.pack(pady=10)
-        
+
         subtitle_label = tk.Label(
             header_frame,
             text="Tu Asistente Educativo Personal - 100% Privado y Seguro",
@@ -62,15 +62,15 @@ class MentorAIGUI:
             fg="white"
         )
         subtitle_label.pack()
-        
+
         # ===== MAIN CONTENT =====
         main_frame = tk.Frame(self.root, bg="#f0f0f0")
         main_frame.pack(fill=tk.BOTH, expand=True, padx=15, pady=15)
-        
+
         # ===== LEFT PANEL (Información) =====
         left_panel = tk.Frame(main_frame, bg="white", relief=tk.RAISED, bd=1)
         left_panel.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 10))
-        
+
         info_title = tk.Label(
             left_panel,
             text="📚 Temas Disponibles",
@@ -79,14 +79,14 @@ class MentorAIGUI:
             fg="#007AFF"
         )
         info_title.pack(pady=10, padx=10)
-        
+
         # Lista de temas
         topics_frame = tk.Frame(left_panel, bg="white")
         topics_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
-        
+
         scrollbar = ttk.Scrollbar(topics_frame)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        
+
         self.topics_listbox = tk.Listbox(
             topics_frame,
             yscrollcommand=scrollbar.set,
@@ -95,7 +95,7 @@ class MentorAIGUI:
         )
         self.topics_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar.config(command=self.topics_listbox.yview)
-        
+
         # Cargar temas
         topics = [
             "🐍 Python Básico",
@@ -111,16 +111,16 @@ class MentorAIGUI:
             "🔐 Trust Wallet y Wallets",
             "📊 Binance Basics"
         ]
-        
+
         for topic in topics:
             self.topics_listbox.insert(tk.END, topic)
-        
+
         self.topics_listbox.bind('<<ListboxSelect>>', self.on_topic_select)
-        
+
         # ===== RIGHT PANEL (Chat) =====
         right_panel = tk.Frame(main_frame, bg="white", relief=tk.RAISED, bd=1)
         right_panel.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
-        
+
         # Área de respuesta
         response_title = tk.Label(
             right_panel,
@@ -130,7 +130,7 @@ class MentorAIGUI:
             fg="#007AFF"
         )
         response_title.pack(pady=10, padx=10)
-        
+
         self.response_text = scrolledtext.ScrolledText(
             right_panel,
             height=12,
@@ -142,11 +142,11 @@ class MentorAIGUI:
         )
         self.response_text.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
         self.response_text.config(state=tk.DISABLED)
-        
+
         # ===== INPUT AREA =====
         input_frame = tk.Frame(self.root, bg="#f0f0f0")
         input_frame.pack(fill=tk.X, padx=15, pady=10)
-        
+
         input_label = tk.Label(
             input_frame,
             text="Tu Pregunta:",
@@ -154,7 +154,7 @@ class MentorAIGUI:
             bg="#f0f0f0"
         )
         input_label.pack(anchor=tk.W)
-        
+
         self.input_text = tk.Entry(
             input_frame,
             font=("Arial", 10),
@@ -163,11 +163,11 @@ class MentorAIGUI:
         )
         self.input_text.pack(fill=tk.X, pady=5)
         self.input_text.bind("<Return>", lambda e: self.send_query())
-        
+
         # ===== BUTTONS =====
         button_frame = tk.Frame(self.root, bg="#f0f0f0")
         button_frame.pack(fill=tk.X, padx=15, pady=10)
-        
+
         send_button = tk.Button(
             button_frame,
             text="📤 Enviar Pregunta",
@@ -179,7 +179,7 @@ class MentorAIGUI:
             pady=8
         )
         send_button.pack(side=tk.LEFT, padx=5)
-        
+
         stats_button = tk.Button(
             button_frame,
             text="🏆 Mi Progreso",
@@ -191,7 +191,7 @@ class MentorAIGUI:
             pady=8
         )
         stats_button.pack(side=tk.LEFT, padx=5)
-        
+
         settings_button = tk.Button(
             button_frame,
             text="⚙️ Configuración",
@@ -203,7 +203,7 @@ class MentorAIGUI:
             pady=8
         )
         settings_button.pack(side=tk.LEFT, padx=5)
-        
+
         about_button = tk.Button(
             button_frame,
             text="ℹ️ Acerca de",
@@ -215,7 +215,7 @@ class MentorAIGUI:
             pady=8
         )
         about_button.pack(side=tk.LEFT, padx=5)
-    
+
     def on_topic_select(self, event):
         """Cuando el usuario selecciona un tema"""
         selection = self.topics_listbox.curselection()
@@ -223,74 +223,74 @@ class MentorAIGUI:
             topic = self.topics_listbox.get(selection[0])
             self.input_text.delete(0, tk.END)
             self.input_text.insert(0, f"Explícame sobre {topic}")
-    
+
     def send_query(self):
         """Enviar pregunta al motor de asistencia"""
         query = self.input_text.get().strip()
-        
+
         if not query:
             messagebox.showwarning("Advertencia", "Por favor, escribe una pregunta")
             return
-        
+
         # Limpiar entrada
         self.input_text.delete(0, tk.END)
-        
+
         # Mostrar que está procesando
         self.response_text.config(state=tk.NORMAL)
         self.response_text.delete(1.0, tk.END)
         self.response_text.insert(tk.END, "⏳ Procesando tu pregunta...\n")
         self.response_text.config(state=tk.DISABLED)
         self.root.update()
-        
+
         try:
             # Procesar query
             response = self.engine.process_query(query, self.current_language)
-            
+
             # Actualizar gamificación
             self.gamification.add_points(self.user_id, 10)
-            
+
             # Mostrar respuesta
             self.response_text.config(state=tk.NORMAL)
             self.response_text.delete(1.0, tk.END)
-            
+
             # Formatear respuesta
             formatted_response = self.format_response(response)
             self.response_text.insert(tk.END, formatted_response)
             self.response_text.config(state=tk.DISABLED)
-            
+
         except Exception as e:
             self.response_text.config(state=tk.NORMAL)
             self.response_text.delete(1.0, tk.END)
             self.response_text.insert(tk.END, f"❌ Error: {e!s}\n\nPor favor, intenta de nuevo.")
             self.response_text.config(state=tk.DISABLED)
-    
+
     def format_response(self, response):
         """Formatear respuesta para mostrar en GUI"""
         if isinstance(response, dict):
             text = f"✅ {response.get('response', 'Sin respuesta')}\n\n"
-            
+
             if 'explanation' in response:
                 text += f"📖 Explicación:\n{response['explanation']}\n\n"
-            
+
             if 'steps' in response:
                 text += "📋 Pasos:\n"
                 for i, step in enumerate(response['steps'], 1):
                     text += f"{i}. {step}\n"
                 text += "\n"
-            
+
             if 'security_tips' in response:
                 text += "🔒 Consejos de Seguridad:\n"
                 for tip in response['security_tips']:
                     text += f"• {tip}\n"
-            
+
             return text
         else:
             return str(response)
-    
+
     def show_stats(self):
         """Mostrar estadísticas del usuario"""
         stats = self.gamification.get_user_stats(self.user_id)
-        
+
         stats_text = f"""
 🏆 TU PROGRESO EN MENTORAI
 {'='*40}
@@ -310,21 +310,21 @@ class MentorAIGUI:
 
 ¡Sigue aprendiendo para desbloquear más logros!
         """
-        
+
         messagebox.showinfo("Mi Progreso", stats_text)
-    
+
     def show_settings(self):
         """Mostrar ventana de configuración"""
         settings_window = tk.Toplevel(self.root)
         settings_window.title("Configuración")
         settings_window.geometry("400x300")
-        
+
         # Idioma
         lang_frame = tk.LabelFrame(settings_window, text="Idioma", padx=10, pady=10)
         lang_frame.pack(fill=tk.X, padx=10, pady=10)
-        
+
         lang_var = tk.StringVar(value=self.current_language)
-        
+
         for lang_code, lang_name in [("es", "Español"), ("en", "English"), ("pt", "Português")]:
             tk.Radiobutton(
                 lang_frame,
@@ -332,35 +332,35 @@ class MentorAIGUI:
                 variable=lang_var,
                 value=lang_code
             ).pack(anchor=tk.W)
-        
+
         # Privacidad
         privacy_frame = tk.LabelFrame(settings_window, text="Privacidad", padx=10, pady=10)
         privacy_frame.pack(fill=tk.X, padx=10, pady=10)
-        
+
         tk.Label(
             privacy_frame,
             text="✅ Todos los datos se procesan localmente",
             fg="green"
         ).pack(anchor=tk.W)
-        
+
         tk.Label(
             privacy_frame,
             text="✅ Sin conexión a internet requerida",
             fg="green"
         ).pack(anchor=tk.W)
-        
+
         tk.Label(
             privacy_frame,
             text="✅ Cifrado AES-256",
             fg="green"
         ).pack(anchor=tk.W)
-        
+
         # Botones
         def save_settings():
             self.current_language = lang_var.get()
             messagebox.showinfo("Éxito", "Configuración guardada")
             settings_window.destroy()
-        
+
         tk.Button(
             settings_window,
             text="Guardar",
@@ -368,7 +368,7 @@ class MentorAIGUI:
             bg="#007AFF",
             fg="white"
         ).pack(pady=10)
-    
+
     def show_about(self):
         """Mostrar información acerca de MentorAI"""
         about_text = """
@@ -404,13 +404,13 @@ Tu Asistente Educativo Personal
 Licencia: MIT
 GitHub: github.com/mentorai/mentorai
         """
-        
+
         messagebox.showinfo("Acerca de MentorAI", about_text)
-    
+
     def load_user_data(self):
         """Cargar datos del usuario"""
         # En una versión completa, esto cargaría datos del usuario
-    
+
     def save_user_data(self):
         """Guardar datos del usuario"""
         # En una versión completa, esto guardaría datos del usuario
