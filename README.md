@@ -1,4 +1,4 @@
-﻿# MentorAI para Windows
+# MentorAI para Windows
 
 MentorAI es un **profesor local de informática** para Windows 10/11. Ayuda a comprender informática básica, CMD, PowerShell, Python, Git, Docker, Android, Termux y seguridad digital mediante explicaciones y pasos guiados. No es un agente autónomo: **no ejecuta comandos, no hace clic, no modifica el sistema y no observa la pantalla en segundo plano**.
 
