@@ -15,7 +15,7 @@ def test_engine():
     print("Testing 'cd' command:")
     result = engine.process_query("¿Cómo uso el comando cd?")
     print(f"Explanation: {result['explanation']}")
-    
+
     # Test case 2: Crypto Security
     print("\nTesting 'Binance' security:")
     result = engine.process_query("Quiero entrar en Binance")

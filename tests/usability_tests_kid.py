@@ -21,7 +21,7 @@ class KidUsabilityTester:
         """Un niño de 12 años hace preguntas simples"""
         print("\n[NIÑO DE 12 AÑOS - PRUEBA 1] Preguntas Simples")
         print("=" * 60)
-        
+
         queries = [
             "¿Qué es cd?",
             "¿Cómo cambio de carpeta?",
@@ -29,16 +29,16 @@ class KidUsabilityTester:
             "¿Cómo instalo un programa?",
             "¿Qué es Android?",
         ]
-        
+
         for query in queries:
             result = self.engine.process_query(query)
             success = result.get("status") == "success"
-            
+
             print(f"\n👦 Pregunta: '{query}'")
             print(f"   Explicación: {result.get('explanation', 'N/A')[:60]}...")
             print(f"   Pasos: {len(result.get('steps', []))} pasos disponibles")
             print("   ✓ ENTENDIBLE" if success else "   ✗ CONFUSO")
-            
+
             self.test_results.append({
                 "query": query,
                 "success": success,
@@ -49,7 +49,7 @@ class KidUsabilityTester:
         """Probar si el sistema maneja errores de ortografía"""
         print("\n[NIÑO DE 12 AÑOS - PRUEBA 2] Errores de Ortografía")
         print("=" * 60)
-        
+
         queries = [
             "cd (comando correcto)",
             "cd (comando correcto)",
@@ -57,15 +57,15 @@ class KidUsabilityTester:
             "pyton (error de ortografía)",
             "andorid (error de ortografía)",
         ]
-        
+
         correct_queries = ["cd", "powershell", "python", "android"]
         misspelled_queries = ["powershel", "pyton", "andorid"]
-        
+
         print("\n✓ Comandos correctos:")
         for query in correct_queries:
             result = self.engine.process_query(query)
             print(f"  • '{query}': {result.get('explanation', 'N/A')[:50]}...")
-        
+
         print("\n⚠ Comandos con errores de ortografía:")
         for query in misspelled_queries:
             result = self.engine.process_query(query)
@@ -73,7 +73,7 @@ class KidUsabilityTester:
                 print(f"  • '{query}' → Corregido a: '{result['matched_term']}'")
             else:
                 print(f"  • '{query}' → No encontrado (podría mejorar)")
-            
+
             self.test_results.append({
                 "query": query,
                 "success": "matched_term" in result,
@@ -84,29 +84,29 @@ class KidUsabilityTester:
         """Probar el flujo de navegación"""
         print("\n[NIÑO DE 12 AÑOS - PRUEBA 3] Flujo de Navegación")
         print("=" * 60)
-        
+
         print("\n👦 Escenario: Un niño quiere aprender sobre Windows CMD")
         print("   Paso 1: Abre la aplicación")
         print("   ✓ Landing page visible y clara")
-        
+
         print("\n   Paso 2: Busca 'cd'")
         result = self.engine.process_query("cd")
         print(f"   ✓ Resultado encontrado: {result.get('explanation', 'N/A')[:50]}...")
-        
+
         print("\n   Paso 3: Lee los pasos")
         steps = result.get('steps', [])
         if steps:
             print(f"   ✓ {len(steps)} pasos claros:")
             for i, step in enumerate(steps, 1):
                 print(f"      {i}. {step[:60]}...")
-        
+
         print("\n   Paso 4: Lee los consejos de seguridad")
         tips = result.get('security_tips', [])
         if tips:
             print(f"   ✓ {len(tips)} consejos de seguridad:")
             for i, tip in enumerate(tips, 1):
                 print(f"      {i}. {tip[:60]}...")
-        
+
         self.test_results.append({
             "query": "cd",
             "success": len(steps) > 0 and len(tips) > 0,
@@ -117,23 +117,23 @@ class KidUsabilityTester:
         """Probar la claridad visual (simulado)"""
         print("\n[NIÑO DE 12 AÑOS - PRUEBA 4] Claridad Visual")
         print("=" * 60)
-        
+
         print("\n✓ Landing Page:")
         print("  • Logo visible y colorido (Azul y Verde) ✓")
         print("  • Título grande y fácil de leer ✓")
         print("  • Botones grandes y claros ✓")
         print("  • Colores atractivos para niños ✓")
-        
+
         print("\n✓ Interfaz de Búsqueda:")
         print("  • Barra de búsqueda visible ✓")
         print("  • Iconos claros ✓")
         print("  • Texto grande ✓")
-        
+
         print("\n✓ Resultados:")
         print("  • Explicación clara y simple ✓")
         print("  • Pasos numerados ✓")
         print("  • Consejos destacados ✓")
-        
+
         self.test_results.append({
             "query": "visual_clarity",
             "success": True,
@@ -144,23 +144,23 @@ class KidUsabilityTester:
         """Probar características de seguridad para niños"""
         print("\n[NIÑO DE 12 AÑOS - PRUEBA 5] Características de Seguridad")
         print("=" * 60)
-        
+
         print("\n✓ Protección de Datos Personales:")
         print("  • No pide datos personales ✓")
         print("  • No tiene publicidad ✓")
         print("  • No tiene rastreadores ✓")
         print("  • No se conecta a internet innecesariamente ✓")
-        
+
         print("\n✓ Contenido Apropiado:")
         print("  • Solo contenido educativo ✓")
         print("  • Sin contenido inapropiado ✓")
         print("  • Lenguaje claro y respetuoso ✓")
-        
+
         print("\n✓ Privacidad:")
         print("  • Todo procesado localmente ✓")
         print("  • Datos cifrados ✓")
         print("  • Sin almacenamiento en nube ✓")
-        
+
         self.test_results.append({
             "query": "safety",
             "success": True,
@@ -171,22 +171,22 @@ class KidUsabilityTester:
         """Probar si es atractivo para un niño"""
         print("\n[NIÑO DE 12 AÑOS - PRUEBA 6] Engagement y Atractivo")
         print("=" * 60)
-        
+
         print("\n👦 ¿Es divertido?")
         print("  • Colores atractivos: ✓ (Azul y Verde)")
         print("  • Interfaz moderna: ✓")
         print("  • Fácil de usar: ✓")
         print("  • Aprendes mientras usas: ✓")
-        
+
         print("\n👦 ¿Es útil?")
         print("  • Aprendo cosas nuevas: ✓")
         print("  • Los pasos son claros: ✓")
         print("  • Puedo practicar: ✓")
         print("  • Hay consejos de seguridad: ✓")
-        
+
         print("\n👦 ¿Volvería a usarlo?")
         print("  • SÍ, porque es fácil y aprendo ✓")
-        
+
         self.test_results.append({
             "query": "engagement",
             "success": True,
@@ -198,25 +198,25 @@ class KidUsabilityTester:
         print("\n" + "=" * 60)
         print("PRUEBAS DE USABILIDAD - PERSPECTIVA DE NIÑO DE 12 AÑOS")
         print("=" * 60)
-        
+
         self.test_simple_queries()
         self.test_typos_and_misspellings()
         self.test_navigation_flow()
         self.test_visual_clarity()
         self.test_safety_features()
         self.test_engagement()
-        
+
         # Resumen
         print("\n" + "=" * 60)
         print("RESUMEN DE PRUEBAS DE USABILIDAD")
         print("=" * 60)
-        
+
         total_tests = len(self.test_results)
         passed_tests = sum(1 for t in self.test_results if t.get("success", False))
-        
+
         print(f"\n✓ Pruebas Exitosas: {passed_tests}/{total_tests}")
         print(f"✗ Pruebas Fallidas: {total_tests - passed_tests}/{total_tests}")
-        
+
         # Categorías
         categories = {}
         for test in self.test_results:
@@ -226,12 +226,12 @@ class KidUsabilityTester:
             categories[cat]["total"] += 1
             if test.get("success", False):
                 categories[cat]["passed"] += 1
-        
+
         print("\nPor Categoría:")
         for cat, stats in categories.items():
             percentage = (stats["passed"] / stats["total"] * 100) if stats["total"] > 0 else 0
             print(f"  • {cat}: {stats['passed']}/{stats['total']} ({percentage:.0f}%)")
-        
+
         print("\n" + "=" * 60)
         print("CONCLUSIÓN PARA NIÑOS DE 12 AÑOS:")
         print("=" * 60)

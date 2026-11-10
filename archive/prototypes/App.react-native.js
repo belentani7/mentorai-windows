@@ -22,9 +22,9 @@ const AssistantApp = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Asistente Educativo IA</Text>
-      
-      <TouchableOpacity 
-        style={[styles.button, isActive && styles.buttonActive]} 
+
+      <TouchableOpacity
+        style={[styles.button, isActive && styles.buttonActive]}
         onPress={handleCapture}
       >
         <Text style={styles.buttonText}>
@@ -36,7 +36,7 @@ const AssistantApp = () => {
         <ScrollView style={styles.responseContainer}>
           <Text style={styles.subtitle}>Explicación:</Text>
           <Text style={styles.text}>{response.explanation}</Text>
-          
+
           <Text style={styles.subtitle}>Pasos:</Text>
           {response.steps.map((step, index) => (
             <Text key={index} style={styles.text}>• {step}</Text>
