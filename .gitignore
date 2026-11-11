@@ -70,3 +70,9 @@ secrets.json
 .npmrc
 .pypirc
 .user_env
+
+# repo-forge
+node_modules/
+.next/
+*.pyc
+*.log

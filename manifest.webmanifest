@@ -1,0 +1,17 @@
+{
+  "name": "MentorAI",
+  "short_name": "MentorAI",
+  "description": "tutor local de informática (CLI + escritorio)",
+  "lang": "es",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbfaf7",
+  "theme_color": "#056551",
+  "icons": [
+    {
+      "src": "assets/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

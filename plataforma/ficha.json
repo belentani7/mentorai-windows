@@ -1,0 +1,77 @@
+{
+  "esquema": "repo-forge/ficha/1",
+  "nombre": "mentorai-windows",
+  "remoto": "https://github.com/belentani7/mentorai-windows",
+  "arquetipo": "web-static",
+  "stack": "Python",
+  "modelo": "tutor local de informática (CLI + escritorio)",
+  "publico": "personas que aprenden Windows, CMD, Python o Git desde cero, sin conexión fiable",
+  "techo": "tutor offline con banco de lecciones verificadas, diagnóstico del equipo del alumno y progreso local; el profesor que no necesita internet",
+  "modulos": [
+    "Motor de lecciones",
+    "Diagnóstico del entorno",
+    "Ejercicios con corrección",
+    "Progreso local",
+    "Exportar apuntes"
+  ],
+  "no_go": "ejecutar comandos destructivos, requerir nube",
+  "marca": {
+    "nombre": "MentorAI",
+    "familia": "educacion",
+    "paleta": {
+      "familia": "educacion",
+      "bg": "#fbfaf7",
+      "surface": "#f5f4f1",
+      "ink": "#1a1a1a",
+      "muted": "#706f6e",
+      "accent": "#056551",
+      "accent2": "#c2410c",
+      "ok": "#15803d",
+      "warn": "#b45309",
+      "danger": "#b91c1c",
+      "contraste_ink_bg": 16.67,
+      "contraste_accent_bg": 6.74,
+      "accent_sobre_bg_ok": true
+    },
+    "narrativa": "Aprender no debería pedir permiso"
+  },
+  "paywall": {
+    "principio": "muro cero para el alumno: el conocimiento no se bloquea",
+    "fases": 4
+  },
+  "medido": {
+    "archivos": 80,
+    "lineas": 9126,
+    "html": 3,
+    "tests": 9,
+    "bytes": 334766,
+    "lenguajes": {
+      "Python": 58.1,
+      "Markdown": 22.5,
+      "JSON": 8.2,
+      "HTML": 5.4,
+      "JavaScript": 2.9,
+      "CSS": 1.5
+    },
+    "fecha": "2026-11-10"
+  },
+  "gate": {
+    "pass": 34,
+    "fail": 0,
+    "skip": 15,
+    "cumplimiento": 100.0,
+    "fallos": []
+  },
+  "ajustes": {
+    "total": 61,
+    "aplicados": 54,
+    "ya_estaban": 7,
+    "fallos": 0
+  },
+  "esfuerzo_dias": 51,
+  "doctor": {
+    "ok": true,
+    "detalle": "35/35 comprobaciones en verde"
+  },
+  "huella": "d216af1359bf4922"
+}

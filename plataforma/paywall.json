@@ -1,0 +1,44 @@
+{
+  "principio": "muro cero para el alumno: el conocimiento no se bloquea",
+  "quien_paga": "empresas, administraciones y entidades que patrocinan cohortes",
+  "fases": [
+    {
+      "fase": 1,
+      "nombre": "Abierto",
+      "gratis": "todo el contenido y el progreso",
+      "pago": "nada",
+      "gate": "ninguno",
+      "metrica": "lecciones completadas",
+      "por_que": "la promesa es acceso sin registro; cobrar la rompería"
+    },
+    {
+      "fase": 2,
+      "nombre": "Patrocinio",
+      "gratis": "todo",
+      "pago": "empresas financian cohortes y aulas",
+      "gate": "ninguno para el alumno",
+      "metrica": "cohortes financiadas",
+      "por_que": "sostener sin muro"
+    },
+    {
+      "fase": 3,
+      "nombre": "Aula",
+      "gratis": "todo, con modo aula para entidades",
+      "pago": "entidad paga acompañamiento y materiales impresos",
+      "gate": "solo funciones de gestión, nunca el contenido",
+      "metrica": "entidades activas",
+      "por_que": "el valor extra es operativo, no informativo"
+    },
+    {
+      "fase": 4,
+      "nombre": "Credencial",
+      "gratis": "contenido y ruta",
+      "pago": "verificación de credencial a empresas",
+      "gate": "nunca el aprendizaje",
+      "metrica": "credenciales verificadas",
+      "por_que": "se cobra la prueba, no el acceso"
+    }
+  ],
+  "regla_dura": "si una fase exige registro o pago para aprender, se rechaza el diseño",
+  "generado_por": "repo-forge"
+}

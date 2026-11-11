@@ -51,3 +51,52 @@ Proveer valor a través de tecnología moderna, código mantenible y experiencia
 - Monorepo o repositorio independiente según el producto
 - Despliegue por copia de archivos (cero build) salvo que se especifique lo contrario
 - Working trees respetados: no se sobrescriben cambios sin restaurar desde HEAD
+
+<!-- repo-forge:biblia:inicio -->
+# BIBLIA.md — mentorai-windows
+
+Doctrina del producto del repositorio `mentorai-windows` del ecosistema belentani7.
+
+## Visión
+
+tutor offline con banco de lecciones verificadas, diagnóstico del equipo del alumno y progreso local; el profesor que no necesita internet
+
+## Misión
+
+Convertir conocimiento que ya existe en una ruta que una persona real puede recorrer hoy, sin pagar y sin que le pidan datos.
+
+## Público
+
+personas que aprenden Windows, CMD, Python o Git desde cero, sin conexión fiable
+
+## Stack
+
+sitio estático publicable tal cual · Python, Markdown, JSON, HTML, JavaScript, CSS
+
+## Módulos que la promesa exige
+
+- Motor de lecciones
+- Diagnóstico del entorno
+- Ejercicios con corrección
+- Progreso local
+- Exportar apuntes
+
+## Reglas de desarrollo
+
+- Protocolo spec-first: PRD → SRS → Design Doc → ADR → Plan → Tests.
+- Un cambio, un resultado verificable.
+- Nada se afirma sin ejecución; lo no probado se declara como no probado.
+- Escritura solo con confirmación; nada destructivo.
+- Idioma del producto: español, salvo el público del repositorio.
+- Secreto fuera de disco, logs y manifiestos.
+
+## Lo que este repositorio no va a hacer
+
+ejecutar comandos destructivos, requerir nube
+
+## Convenciones
+
+`type(scope): resumen` — feat, fix, docs, chore, refactor, test, perf.
+
+<!-- repo-forge:biblia -->
+<!-- repo-forge:biblia:fin -->
