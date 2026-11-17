@@ -22,7 +22,7 @@ env:
 jobs:
   runtime-tests:
     runs-on: ubuntu-latest
-      timeout-minutes: 20
+    timeout-minutes: 20
     name: Runtime and UI smoke tests
     steps:
       - uses: actions/checkout@v4
@@ -47,7 +47,7 @@ jobs:
 
   security-tests:
     runs-on: ubuntu-latest
-      timeout-minutes: 20
+    timeout-minutes: 20
     name: Security regression tests
     steps:
       - uses: actions/checkout@v4
@@ -64,7 +64,7 @@ jobs:
 
   usability-tests:
     runs-on: ubuntu-latest
-      timeout-minutes: 20
+    timeout-minutes: 20
     name: Beginner usability tests
     steps:
       - uses: actions/checkout@v4
@@ -77,7 +77,7 @@ jobs:
 
   multilingual-tests:
     runs-on: ubuntu-latest
-      timeout-minutes: 20
+    timeout-minutes: 20
     name: Multilingual tests
     steps:
       - uses: actions/checkout@v4
@@ -90,7 +90,7 @@ jobs:
 
   code-quality:
     runs-on: ubuntu-latest
-      timeout-minutes: 20
+    timeout-minutes: 20
     name: Code quality
     steps:
       - uses: actions/checkout@v4
@@ -118,7 +118,7 @@ jobs:
   source-package:
     needs: [runtime-tests, security-tests, usability-tests, multilingual-tests, code-quality]
     runs-on: ubuntu-latest
-      timeout-minutes: 20
+    timeout-minutes: 20
     name: Source package
     steps:
       - uses: actions/checkout@v4
