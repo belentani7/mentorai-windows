@@ -36,6 +36,10 @@
   43.0.3 anterior contradecía el pin); clave `permissions` duplicada eliminada;
   workflow `ci.yml` (placeholder) sustituido por una puerta rápida real;
   pasos de pytest y tests de pago añadidos.
+- CI: job de gitleaks con `fetch-depth: 0` — con el shallow clone por defecto el
+  binario fallaba con exit 1 (no era detección de fugas). `.gitleaks.toml` nuevo:
+  allowlist acotada a los fixtures falsos de `tests/smoke_runtime.py` y
+  `tests/penetration_testing.py`.
 
 ### Seguridad (2026-11-25)
 - Comparación de firma de webhook en tiempo constante; licencia corrupta no abre
