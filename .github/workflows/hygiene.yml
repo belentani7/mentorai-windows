@@ -22,7 +22,11 @@ jobs:
       security-events: write
       actions: read
     steps:
+      # gitleaks escanea rangos de commits (baseRef^..headRef) y necesita el
+      # historial completo; con fetch-depth=1 falla con "Unexpected exit code [1]".
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
       - name: Run Gitleaks
         uses: gitleaks/gitleaks-action@v3
         env:
