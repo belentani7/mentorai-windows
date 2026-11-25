@@ -1,3 +1,7 @@
 # Herramientas de desarrollo y CI (no necesarias para ejecutar la app).
 # Runtime: requirements-windows.txt
 pytest==9.2.0
+# cryptography es una dependencia de runtime (ver requirements-windows.txt):
+# los tests de cifrado (local_store, e2e) la importan directamente.
+# Mantener el mismo pin en ambos archivos.
+cryptography==50.0.2
