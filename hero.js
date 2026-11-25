@@ -130,6 +130,11 @@
     }
 
     var program = createProgram(gl, vertexShaderSource, fragmentShaderSource);
+    if (!program) {
+      // Fallo de compilación/enlace: degradar a degradado CSS, nunca romper la página.
+      canvas.style.background = 'linear-gradient(135deg, ' + colorA + ', ' + colorB + ')';
+      return;
+    }
     gl.useProgram(program);
 
     var positionBuffer = gl.createBuffer();
@@ -163,18 +168,35 @@
     window.addEventListener('mousemove', function (e) {
       mouse.x = e.clientX / window.innerWidth;
       mouse.y = 1.0 - e.clientY / window.innerHeight;
-    });
+    }, { passive: true });
 
     window.addEventListener('resize', resize);
 
+    var inView = true;
     var observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
-        paused = !entry.isIntersecting;
+        inView = entry.isIntersecting;
       });
+      paused = !inView || document.hidden;
     }, { threshold: 0.1 });
     observer.observe(canvas);
 
+    document.addEventListener('visibilitychange', function () {
+      paused = !inView || document.hidden;
+    });
+
     resize();
+
+    // Accesibilidad: con prefers-reduced-motion se pinta un único fotograma estático.
+    var reducedMotion = window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (reducedMotion) {
+      gl.uniform1f(timeLoc, 12.0);
+      gl.uniform2f(mouseLoc, 0.5, 0.5);
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      return { destroy: function () { observer.disconnect(); gl.deleteProgram(program); gl.deleteBuffer(positionBuffer); }, setColors: function () {} };
+    }
 
     function loop(t) {
       if (!paused) {

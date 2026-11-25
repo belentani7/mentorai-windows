@@ -5,15 +5,17 @@ Pruebas en Portugués, Español, Inglés y Catalán
 """
 
 import sys
+from pathlib import Path
 
-sys.path.insert(0, '/home/ubuntu/asistente_educativo')
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 
 from core.assistant_engine import AssistantEngine
 
 
 class MultilingualTester:
     def __init__(self):
-        self.engine = AssistantEngine('/home/ubuntu/asistente_educativo/knowledge_base')
+        self.engine = AssistantEngine(ROOT / "knowledge_base")
         self.results = {
             "portuguese": [],
             "spanish": [],
@@ -245,3 +247,14 @@ class MultilingualTester:
 if __name__ == "__main__":
     tester = MultilingualTester()
     tester.run_all_tests()
+    total = sum(len(tests) for tests in tester.results.values())
+    passed = sum(
+        1
+        for tests in tester.results.values()
+        for t in tests
+        if t.get("success", False)
+    )
+    if passed < total:
+        print(f"\nRESULTADO: {passed}/{total} consultas con respuesta — falla alguna comprobación")
+        sys.exit(1)
+    sys.exit(0)

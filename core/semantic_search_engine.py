@@ -175,7 +175,10 @@ class SemanticSearchEngine:
 
 if __name__ == "__main__":
     # Prueba del motor de búsqueda semántica
-    engine = SemanticSearchEngine('/home/ubuntu/asistente_educativo/knowledge_base')
+    from pathlib import Path
+
+    kb = Path(__file__).resolve().parents[1] / "knowledge_base"
+    engine = SemanticSearchEngine(str(kb))
 
     print("=" * 60)
     print("SEMANTIC SEARCH ENGINE - PRUEBAS")

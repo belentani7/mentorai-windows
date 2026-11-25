@@ -3,20 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mentorai Windows...</title>
-  <meta name="description" content="Repositorio mentorai-windows — parte del ecosistema Belentani">
+  <title>MentorAI para Windows — Profesor local de informática</title>
+  <meta name="description" content="MentorAI es un profesor local de informática para Windows 10/11: CMD, PowerShell, Python, Git, Docker, Android, Termux y seguridad digital. Funciona sin conexión, no ejecuta comandos por ti y no envía tus datos a ningún servidor.">
+  <link rel="canonical" href="https://belentani7.github.io/mentorai-windows/index.html">
   <link rel="stylesheet" href="hero.css">
   <meta name="theme-color" content="#0ea5e9">
-  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="manifest" href="manifest.webmanifest">
   <script defer src="hero.js"></script>
 
 <!-- repo-forge:head -->
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="mentorai-windows — Repositorio mentorai-windows — parte del ecosistema Belentani">
-<meta property="og:description" content="Convertir conocimiento que ya existe en una ruta que una persona real puede recorrer hoy, sin pagar y sin que le pidan datos.">
-<meta property="og:image" content="brand/og-image.svg">
+<meta property="og:title" content="MentorAI para Windows — Profesor local de informática">
+<meta property="og:description" content="Profesor local de informática para Windows 10/11. Explicaciones con pasos y consejos de seguridad, conocimiento offline y datos cifrados en tu equipo.">
+<meta property="og:image" content="https://belentani7.github.io/mentorai-windows/brand/og-image.svg">
+<meta property="og:url" content="https://belentani7.github.io/mentorai-windows/index.html">
+<meta property="og:locale" content="es_ES">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MentorAI para Windows — Profesor local de informática">
+<meta name="twitter:description" content="Profesor local de informática para Windows 10/11. Sin conexión, sin cuenta, sin comandos automáticos.">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/a11y.css">
 <style id="hero-canvas-fit">
@@ -25,98 +30,91 @@
 </style>
 <meta name="color-scheme" content="light dark">
 <meta name="robots" content="index,follow">
-<meta property="og:locale" content="es_ES">
-<meta name="twitter:title" content="Mentorai Windows...">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="format-detection" content="telephone=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 <body>
-<main>
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
 
   <nav class="nav" aria-label="Principal">
-    <a href="#" class="logo">mentorai-windows</a>
+    <a href="index.html" class="logo">MentorAI</a>
     <ul class="nav-links">
       <li><a href="#features">Características</a></li>
       <li><a href="#stack">Stack</a></li>
       <li><a href="#about">Acerca de</a></li>
     </ul>
-    <a href="#" class="cta">Empezar</a>
+    <a href="docs.html" class="cta">Empezar</a>
   </nav>
 
+<main id="contenido">
   <section class="hero">
     <div class="hero-canvas-wrapper">
-      <canvas id="hero-canvas" aria-hidden="true" style="width:100%;height:100%;display:block"></canvas>
+      <canvas id="hero-canvas" aria-hidden="true"></canvas>
     </div>
-    <div class="hero-overlay" id="react-hero">
-      <h1>mentorai-windows</h1>
-      <p>Repositorio mentorai-windows — parte del ecosistema Belentani</p>
+    <div class="hero-overlay">
+      <h1>MentorAI para Windows</h1>
+      <p>Profesor local de informática para Windows 10/11: CMD, PowerShell, Python, Git, Docker, Android y seguridad digital. Explica, no ejecuta; tus datos nunca salen de tu equipo.</p>
       <div class="hero-actions">
-        <a href="#features" class="btn-primary">Ver características</a>
-        <a href="#stack" class="btn-secondary">Ver stack</a>
+        <a href="docs.html" class="btn-primary">Documentación</a>
+        <a href="https://github.com/belentani7/mentorai-windows" class="btn-secondary">Repositorio</a>
       </div>
     </div>
   </section>
 
   <section class="section" id="features">
     <h2>Características</h2>
-    <p>Producto completo con landing page hero, shader WebGL animado, y stack moderno listo para producción.</p>
+    <p>Una aplicación de escritorio PyQt5 con una base de conocimiento local de 36 temas: explicaciones con pasos, consejos de seguridad y progreso guardado solo en tu equipo.</p>
     <div class="grid">
       <div class="card">
-        <h3>🚀 Hero con Shader WebGL</h3>
-        <p>Fondo animado con FBM (Fractal Brownian Motion), parallax de ratón y modo de bajo consumo.</p>
+        <h3>🖥️ App de escritorio real</h3>
+        <p>Interfaz PyQt5 para Windows 10/11 con navegación por temas, historial cifrado, progreso local y Professor Mode (lectura explícita por el usuario, nunca automática).</p>
       </div>
       <div class="card">
-        <h3>📱 Responsive</h3>
-        <p>Diseño adaptable a móvil, tableta y desktop con Tailwind CSS.</p>
+        <h3>📴 100% sin conexión</h3>
+        <p>El motor y la base de conocimiento JSON funcionan offline. No hay telemetría, ni cuentas, ni dependencias de red en el núcleo.</p>
       </div>
       <div class="card">
-        <h3>⚡ Rápido</h3>
-        <p>Sin dependencias pesadas para el hero. Carga instantánea y DPR limitado.</p>
+        <h3>🔐 Datos cifrados</h3>
+        <p>Consultas e historial cifrados con AES-256-GCM; en Windows la clave maestra se protege con DPAPI y el borrado de datos es explícito.</p>
       </div>
       <div class="card">
-        <h3>🔒 Seguro</h3>
-        <p>Sin secretos hardcodeados. Variables de entorno para claves sensibles.</p>
+        <h3>⚡ Hero ligero</h3>
+        <p>Esta página no usa frameworks JavaScript: un shader WebGL propio (FBM con parallax, pausado fuera de pantalla) y degradado CSS como respaldo.</p>
       </div>
     </div>
   </section>
 
   <section class="section" id="stack">
     <h2>Stack Tecnológico</h2>
-    <p>Tecnologías utilizadas en este repositorio.</p>
+    <p>Tecnologías reales del repositorio.</p>
     <ul class="stack-list">
-      
+      <li>Python 3.12</li>
+      <li>PyQt5</li>
+      <li>SQLite</li>
+      <li>AES-256-GCM</li>
+      <li>Windows DPAPI</li>
+      <li>PyInstaller</li>
+      <li>pytest</li>
+      <li>GitHub Actions</li>
+      <li>WebGL (GLSL)</li>
     </ul>
   </section>
 
   <section class="section" id="about">
-    <h2>Acerca de mentorai-windows</h2>
-    <p>Este repositorio forma parte del ecosistema Belentani. Código abierto bajo licencia MIT. Documentación completa y tests incluidos.</p>
+    <h2>Acerca de MentorAI</h2>
+    <p>Código abierto bajo licencia MIT. Revisa la <a href="docs.html">documentación</a>, la <a href="privacidad.html">política de privacidad</a> o el <a href="accesibilidad.html">compromiso de accesibilidad</a>. Parte del ecosistema educativo Belentani / NOIACORE.</p>
   </section>
 
-  </main>
+</main>
 <footer>
-    <p>© 2026 mentorai-windows — Parte del ecosistema Belentani / NOIACORE</p>
-  </footer>
+    <p>© 2026 mentorai-windows — Parte del ecosistema Belentani / NOIACORE · <a href="https://github.com/belentani7/mentorai-windows">GitHub</a> · <a href="privacidad.html">Privacidad</a> · <a href="accesibilidad.html">Accesibilidad</a></p>
+</footer>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       window.initHeroShader('hero-canvas', '#0ea5e9', '#7c3aed');
     });
   </script>
-<!-- page-fix:1 -->
-<script type="application/json" id="hero-data">
-{
-  "eyebrow": "",
-  "title": "mentorai-windows",
-  "subtitle": "MentorAI es un profesor local de informática para Windows 10/11. Ayuda a comprender informática básica, CMD, PowerShell, Python, Git, Docker, Android, Termux y seguridad digital mediante explicaciones y pasos guiados.",
-  "install": "",
-  "docsHref": "docs.html",
-  "repoHref": "https://github.com/belentani7/mentorai-windows",
-  "demoHref": "",
-  "chips": []
-}
-</script>
-<script src="site-hero.js" defer></script>
 </body>
 </html>

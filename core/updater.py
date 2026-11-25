@@ -6,7 +6,6 @@ Verifica y descarga actualizaciones de forma segura
 
 import hashlib
 import json
-import shutil
 from datetime import datetime
 from pathlib import Path
 
@@ -76,7 +75,7 @@ class UpdateManager:
                 return -1
             else:
                 return 0
-        except:
+        except (ValueError, TypeError, AttributeError):
             return 0
 
     def download_update(self, download_url, checksum=None):
@@ -112,22 +111,19 @@ class UpdateManager:
         return False
 
     def rollback_update(self):
-        """Revertir a versión anterior si hay error"""
-        try:
-            backup_dir = Path.home() / ".mentorai" / f"backup_{self.app_version}"
+        """Rollback automático no disponible (fail closed).
 
-            if backup_dir.exists():
-                # Restaurar desde backup
-                shutil.rmtree(self.app_dir)
-                shutil.copytree(backup_dir, self.app_dir)
-                self.log_update("Rollback completado")
-                return True
-
-            return False
-
-        except Exception as e:
-            self.log_update(f"Error en rollback: {e}")
-            return False
+        La implementación anterior ejecutaba `shutil.rmtree(self.app_dir)` —borrando
+        el directorio completo de la aplicación— antes de copiar el respaldo, sin
+        verificación de firma ni journal de recuperación. Un rollback defectuoso
+        destruía la instalación. Se bloquea hasta disponer de un actualizador
+        autenticado, transaccional y verificado en Windows real.
+        """
+        self.log_update(
+            "Rollback automático bloqueado: no existe un mecanismo de reversión "
+            "verificado. Reinstala la versión oficial desde el instalador."
+        )
+        return False
 
     def log_update(self, message):
         """Registrar evento de actualización"""

@@ -196,14 +196,14 @@ class LocalStore:
                 question = self.security.decrypt_data(
                     row["question_token"], "history.question"
                 )
+            except Exception:
+                question = "[No disponible: registro corrupto]"
+            try:
                 answer = self.security.decrypt_data(
                     row["answer_token"], "history.answer"
                 )
             except Exception:
-                question, answer = (
-                    "[No disponible: registro corrupto]",
-                    "[No disponible]",
-                )
+                answer = "[No disponible]"
             history.append(
                 HistoryItem(question, answer, str(row["topic"]), str(row["created_at"]))
             )

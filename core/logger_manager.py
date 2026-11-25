@@ -35,15 +35,24 @@ class SecureLogger:
             if filename.endswith(".jsonl"):
                 with open(os.path.join(self.log_dir, filename), "r", encoding="utf-8") as f:
                     for line in f:
-                        logs.append(json.loads(line))
+                        try:
+                            logs.append(json.loads(line))
+                        except json.JSONDecodeError:
+                            # Una línea corrupta no invalida el resto del histórico
+                            continue
         return logs
 
     def clear_logs(self):
         for filename in os.listdir(self.log_dir):
-            os.remove(os.path.join(self.log_dir, filename))
+            path = os.path.join(self.log_dir, filename)
+            if os.path.isfile(path):
+                os.remove(path)
         return "Todos los logs locales han sido eliminados."
 
 if __name__ == "__main__":
-    logger = SecureLogger("/home/ubuntu/asistente_educativo/logs")
+    import tempfile
+
+    demo_dir = os.path.join(tempfile.mkdtemp(prefix="mentorai-logs-"), "logs")
+    logger = SecureLogger(demo_dir)
     logger.log_event("user_123", "query", {"term": "cd", "status": "success"})
     print(f"Logs capturados: {len(logger.get_all_logs())}")

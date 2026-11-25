@@ -27,7 +27,9 @@ def check() -> list[tuple[str, bool, str]]:
     if cat.is_file():
         try:
             data = json.loads(cat.read_text(encoding="utf-8"))
-            out.append(("catalogo.json válido", "nombre" in data and "medido" in data, ""))
+            required_keys = {"repo", "familia", "estado"}
+            missing = required_keys - data.keys()
+            out.append(("catalogo.json válido", not missing, f"faltan: {', '.join(sorted(missing))}" if missing else ""))
         except json.JSONDecodeError as exc:
             out.append(("catalogo.json válido", False, str(exc)))
 

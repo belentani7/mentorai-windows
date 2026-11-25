@@ -1,12 +1,18 @@
 # repo-forge:tareas
-.PHONY: doctor test check all
+.PHONY: doctor test smoke validate check all
 
 doctor:
 	python scripts/doctor.py
 
-test:
-	python -m unittest discover -s tests -v
+validate:
+	python tools/validate_repository.py
 
-check: doctor test
+test:
+	python -m pytest
+
+smoke:
+	python tests/smoke_runtime.py
+
+check: doctor validate test smoke
 
 all: check
