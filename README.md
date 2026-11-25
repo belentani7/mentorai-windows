@@ -48,15 +48,19 @@ El ejecutable y el instalador no se deben considerar verificados solo por existi
 
 ## Pruebas reproducibles
 
-Desde la raíz del repositorio:
+Desde la raíz del repositorio (instalar antes `requirements-dev.txt`):
 
 ```powershell
-python tests\smoke_runtime.py
-python tests\security_tests.py
-python tests\multilingual_tests.py
-python tests\usability_tests_kid.py
-python tools\validate_repository.py
+python -m pytest                     # suite unitaria (motor, cifrado, pagos, updater) y camino feliz e2e
+python tests\smoke_runtime.py        # humo: KB, redacción, cifrado, persistencia y borrado
+python tests\security_tests.py       # regresión de seguridad heredada
+python tests\penetration_testing.py  # regresiones conductuales tipo pentest (no es una auditoría)
+python tests\test_payment_flow.py    # flujo de pago/licencia simulado
+python tools\validate_repository.py  # validación estructural del repositorio
+python scripts\doctor.py             # reglas del repositorio
 ```
+
+El `Makefile` agrega los pasos principales: `make check` ejecuta doctor + validador + pytest + humo.
 
 La prueba de humo comprueba carga de la base, búsqueda con errores de escritura, redacción de identificadores sensibles, cifrado autenticado, persistencia y borrado. Las pruebas heredadas de seguridad se conservan como regresión; no sustituyen una auditoría independiente ni un pentest profesional.
 
@@ -75,7 +79,9 @@ cli/                  Interfaz de respaldo que usa el mismo core
 knowledge_base/       Temas educativos JSON
 native_modules/       Adaptadores de capacidades del sistema
 installer/            Script NSIS oficial
-tests/                Pruebas ejecutables y unitarias
+tests/                Pruebas unitarias (pytest, tests/unit) y scripts de humo/regresión
+scripts/              Herramientas internas (doctor de reglas)
+tools/                Validador estructural del repositorio
 archive/              Prototipos retirados, no incluidos en el build
 ```
 
@@ -106,4 +112,4 @@ vive en el nodo central:
 
 
 ## Producto
-Véase `plataforma/OFERTA.md`, `plataforma/precios.json`, `plataforma/ONEPAGER.md`.
+Véase [`plataforma/FICHA.md`](plataforma/FICHA.md) para la ficha de estado real del producto, `plataforma/OFERTA.md`, `plataforma/precios.json` y `plataforma/ONEPAGER.md`.

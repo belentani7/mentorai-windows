@@ -102,8 +102,13 @@ body {
 .hero-overlay {
   position: relative;
   z-index: 10;
-  padding: 2rem;
-  max-width: 800px;
+  padding: 2rem 2.25rem;
+  max-width: 46rem;
+  background: rgba(5, 3, 10, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1.25rem;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
 }
 .hero h1 {
   font-size: clamp(2.5rem, 8vw, 5rem);
@@ -111,15 +116,13 @@ body {
   line-height: 1.1;
   margin: 0 0 1rem;
   letter-spacing: -0.02em;
-  background: linear-gradient(135deg, var(--hero-color-a), var(--hero-color-b));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #f8fafc;
+  text-wrap: balance;
 }
 .hero p {
   font-size: clamp(1.1rem, 3vw, 1.5rem);
-  color: var(--text-secondary);
-  margin: 0 0 2rem;
+  color: #e2e8f0;
+  margin: 0 auto 2rem;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
@@ -145,16 +148,16 @@ body {
 .btn-primary:hover { transform: translateY(-2px); opacity: 0.9; }
 .btn-secondary {
   background: transparent;
-  color: var(--text-primary);
+  color: #f8fafc;
   padding: 0.8rem 1.6rem;
   border-radius: 0.5rem;
   font-weight: 600;
   text-decoration: none;
   font-size: 1rem;
-  border: 1px solid var(--text-secondary);
+  border: 1px solid rgba(248, 250, 252, 0.55);
   cursor: pointer;
 }
-.btn-secondary:hover { background: rgba(15, 23, 42, 0.05); }
+.btn-secondary:hover { background: rgba(255, 255, 255, 0.12); }
 
 /* Sections */
 .section {

@@ -1,9 +1,3 @@
-permissions:
-  contents: read
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 name: Hygiene
 
 on:
@@ -12,23 +6,40 @@ on:
   pull_request:
     branches: [ main, master ]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   gitleaks:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
     steps:
-      - uses: actions/checkout@v4
+      # gitleaks escanea rangos de commits (baseRef^..headRef) y necesita el
+      # historial completo; con fetch-depth=1 falla con "Unexpected exit code [1]".
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
       - name: Run Gitleaks
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "true"
+          GITLEAKS_ENABLE_SUMMARY: "true"
 
   conflict-markers:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Scan conflict markers
         run: |
-          if git grep -E '^(<<<<<<< |=======$|>>>>>>> )' -- . ; then
+          if git grep -E '^(<<<<<<< |>>>>>>> )|^=======$' -- . ; then
             echo "Marcadores de conflicto detectados"; exit 1; fi

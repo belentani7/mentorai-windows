@@ -1,0 +1,15 @@
+# Configuración de gitleaks para mentorai-windows.
+#
+# Los únicos "secretos" presentes en el repositorio son fixtures FALSOS usados
+# por las suites de regresión para verificar la redacción y el cifrado:
+#   - tests/smoke_runtime.py        (escanea redacción de sk_test_…/emails)
+#   - tests/penetration_testing.py  (sk_live_…, tarjeta 4532-…-9012, BTC genesis)
+# No son credenciales reales; los tests fallarían si se redactasen a propósito.
+# Cualquier otra coincidencia de gitleaks debe investigarse, no allowlistarse.
+
+[allowlist]
+description = "Fixtures falsos de tests de seguridad (no son credenciales)"
+paths = [
+  '''tests/smoke_runtime.py''',
+  '''tests/penetration_testing.py''',
+]

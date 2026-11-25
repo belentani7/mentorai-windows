@@ -7,7 +7,9 @@ Suite completa de pruebas para validar el sistema de pagos
 import hashlib
 import hmac
 import json
+import shutil
 import sys
+import tempfile
 from datetime import datetime
 from pathlib import Path
 
@@ -21,8 +23,7 @@ class PaymentFlowTester:
 
     def __init__(self):
         self.test_results = []
-        self.test_dir = Path("/tmp/mentorai_test")
-        self.test_dir.mkdir(parents=True, exist_ok=True)
+        self.test_dir = Path(tempfile.mkdtemp(prefix="mentorai-pay-test-"))
         self.license_manager = LicenseManager(self.test_dir)
         self.payment_processor = StripePaymentProcessor(app_dir=self.test_dir)
         self.test_count = 0
@@ -252,7 +253,7 @@ class PaymentFlowTester:
 
     def test_payment_logging(self):
         """Prueba: Verificar que los pagos se registran"""
-        log_file = Path("/tmp/mentorai_test/payments.log")
+        log_file = self.test_dir / "payments.log"
 
         # Limpiar log anterior
         if log_file.exists():
@@ -318,5 +319,8 @@ class PaymentFlowTester:
 
 if __name__ == "__main__":
     tester = PaymentFlowTester()
-    success = tester.run_all_tests()
+    try:
+        success = tester.run_all_tests()
+    finally:
+        shutil.rmtree(tester.test_dir, ignore_errors=True)
     sys.exit(0 if success else 1)

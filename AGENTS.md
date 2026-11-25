@@ -67,7 +67,8 @@ Cualquier agente que toque **MentorAI** debe:
 | Comando | Efecto |
 |---|---|
 | `python scripts/doctor.py` | Solo lectura; devuelve el estado de reglas |
-| `python -m unittest discover -s tests` | Pruebas locales |
+| `python -m pytest` | Pruebas locales (ver `pytest.ini`) |
+| `python tools/validate_repository.py` | Validador estructural del repositorio |
 
 <!-- repo-forge:agents -->
 <!-- repo-forge:agents:fin -->

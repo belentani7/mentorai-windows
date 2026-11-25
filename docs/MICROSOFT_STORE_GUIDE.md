@@ -47,8 +47,8 @@ MentorAI está desarrollado en Python con PyQt5. Para publicarlo en la Microsoft
 
 El workflow de GitHub Actions compila `dist/MentorAI.exe` nativamente en Windows x64. Ese es el binario que debe incluirse en el paquete de la tienda; no se debe reutilizar ningún archivo antiguo llamado `MentorAI-Windows`.
 
-```bash
-cd /home/ubuntu/asistente_educativo
+```powershell
+# En la raíz del repositorio clonado (Windows 10/11)
 python -m PyInstaller --clean --noconfirm mentorai_windows.spec
 ```
 

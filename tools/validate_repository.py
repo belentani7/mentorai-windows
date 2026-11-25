@@ -1,11 +1,37 @@
 from __future__ import annotations
 
 import json
+import os
 import pathlib
 import sys
+from pathlib import Path
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 errors: list[str] = []
+
+# Directorios generados o de terceros que nunca son "fuente" del repositorio.
+IGNORED_DIRS = {
+    ".git",
+    "__pycache__",
+    ".venv",
+    "venv",
+    "env",
+    ".env",
+    "node_modules",
+    "dist",
+    "build",
+    "out",
+    ".next",
+    ".nuxt",
+    "coverage",
+    "htmlcov",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".turbo",
+    "site-packages",
+    ".eggs",
+}
 
 required = [
     ROOT / "cli" / "mentorai_cli.py",
@@ -26,17 +52,24 @@ for path in sorted((ROOT / "knowledge_base").glob("*.json")):
     except Exception as exc:
         errors.append(f"invalid JSON {path.name}: {exc}")
 
-for path in ROOT.rglob("*.py"):
-    if any(part in {".git", "__pycache__"} for part in path.parts):
+
+def iter_source_files():
+    """Recorre el árbol sin descender en directorios generados (rápido y sin ruido)."""
+    for dirpath, dirnames, filenames in os.walk(ROOT):
+        dirnames[:] = [d for d in dirnames if d not in IGNORED_DIRS]
+        for filename in filenames:
+            yield Path(dirpath) / filename
+
+
+for path in iter_source_files():
+    if path.suffix != ".py":
         continue
     try:
         compile(path.read_text(encoding="utf-8"), str(path), "exec")
     except Exception as exc:
         errors.append(f"invalid Python {path.relative_to(ROOT)}: {exc}")
 
-for path in ROOT.rglob("*"):
-    if not path.is_file() or any(part in {".git", "__pycache__"} for part in path.parts):
-        continue
+for path in iter_source_files():
     try:
         with path.open("rb") as handle:
             signature = handle.read(2)

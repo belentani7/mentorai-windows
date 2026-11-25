@@ -5,15 +5,17 @@ Pruebas de usabilidad desde la perspectiva de un niño de 12 años
 """
 
 import sys
+from pathlib import Path
 
-sys.path.insert(0, '/home/ubuntu/asistente_educativo')
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 
 from core.assistant_engine import AssistantEngine
 
 
 class KidUsabilityTester:
     def __init__(self):
-        self.engine = AssistantEngine('/home/ubuntu/asistente_educativo/knowledge_base')
+        self.engine = AssistantEngine(ROOT / "knowledge_base")
         self.test_results = []
         self.difficulty_level = "EASY"  # Simulating a 12-year-old's perspective
 
@@ -247,3 +249,9 @@ class KidUsabilityTester:
 if __name__ == "__main__":
     tester = KidUsabilityTester()
     tester.run_all_tests()
+    total = len(tester.test_results)
+    passed = sum(1 for t in tester.test_results if t.get("success", False))
+    if passed < total:
+        print(f"\nRESULTADO: {passed}/{total} comprobaciones superadas — falla alguna comprobación")
+        sys.exit(1)
+    sys.exit(0)

@@ -12,8 +12,6 @@ playwright-report/
 .aider*
 BIO.md
 REPO.md
-CODE_OF_CONDUCT.md
-CONTRIBUTING.md
 __pycache__/
 *.pyc
 node_modules/
@@ -45,5 +43,3 @@ htmlcov/
 .aider*
 BIO.md
 REPO.md
-CODE_OF_CONDUCT.md
-CONTRIBUTING.md

@@ -7,6 +7,7 @@ Integración segura de pagos para licencias
 import hashlib
 import hmac
 import json
+import secrets
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -27,22 +28,24 @@ class LicenseManager:
         return f"MNT-{license_key}"
 
     def validate_license(self, license_key: str) -> bool:
-        """Validar licencia"""
+        """Validar licencia; cualquier dato local ausente o corrupto falla en cerrado."""
+        if not license_key:
+            return False
         if not self.license_file.exists():
             return False
 
-        with open(self.license_file, 'r') as f:
-            license_data = json.load(f)
-
-        if license_data.get('license_key') != license_key:
+        try:
+            with open(self.license_file, 'r', encoding='utf-8') as f:
+                license_data = json.load(f)
+            expected_key = str(license_data.get('license_key', ''))
+            expiry = datetime.fromisoformat(str(license_data.get('expiry_date', '')))
+        except (OSError, json.JSONDecodeError, ValueError, TypeError):
             return False
 
-        # Verificar expiración
-        expiry = datetime.fromisoformat(license_data.get('expiry_date', ''))
-        if datetime.now() > expiry:
+        if not hmac.compare_digest(expected_key, str(license_key)):
             return False
 
-        return True
+        return datetime.now() < expiry
 
     def activate_license(self, license_key: str, email: str, days: int = 365) -> bool:
         """Activar licencia"""
@@ -95,15 +98,16 @@ class StripePaymentProcessor:
         session = stripe.checkout.Session.create(...)
         """
 
+        session_token = secrets.token_hex(8)
         session_data = {
-            'session_id': f"cs_{hashlib.md5(email.encode()).hexdigest()[:16]}",
+            'session_id': f"cs_{session_token}",
             'email': email,
             'product': product,
             'amount': amount,
             'currency': 'USD',
             'status': 'pending',
             'created_at': datetime.now().isoformat(),
-            'payment_url': f"https://checkout.stripe.com/pay/cs_{hashlib.md5(email.encode()).hexdigest()[:16]}"
+            'payment_url': f"https://checkout.stripe.com/pay/cs_{session_token}"
         }
 
         return session_data
@@ -116,14 +120,14 @@ class StripePaymentProcessor:
 
     def process_webhook(self, event_data: dict, signature: str) -> bool:
         """Procesar webhook de Stripe"""
-        # Verificar firma del webhook
+        # Verificar firma del webhook (comparación en tiempo constante)
         expected_sig = hmac.new(
             self.webhook_secret.encode(),
             json.dumps(event_data).encode(),
             hashlib.sha256
         ).hexdigest()
 
-        if signature != expected_sig:
+        if not hmac.compare_digest(str(signature), expected_sig):
             return False
 
         # Procesar evento
