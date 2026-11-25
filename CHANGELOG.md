@@ -32,9 +32,10 @@
   Permissions-Policy, Content-Security-Policy).
 - CI: runtimes de GitHub Actions migrados a Node 24 (checkout@v7, setup-python@v7,
   upload-artifact@v7, codeql-action@v4, gitleaks-action@v3); `cryptography` del job
-  de seguridad fijada a 50.0.0 (la 43.0.3 anterior contradecía el pin); clave
-  `permissions` duplicada eliminada; workflow `ci.yml` (placeholder) sustituido por
-  una puerta rápida real; pasos de pytest y tests de pago añadidos.
+  de seguridad fijada al mismo patch que `requirements-windows.txt` (50.0.2; la
+  43.0.3 anterior contradecía el pin); clave `permissions` duplicada eliminada;
+  workflow `ci.yml` (placeholder) sustituido por una puerta rápida real;
+  pasos de pytest y tests de pago añadidos.
 
 ### Seguridad (2026-11-25)
 - Comparación de firma de webhook en tiempo constante; licencia corrupta no abre
